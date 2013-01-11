@@ -42,45 +42,55 @@ public final class SectionFragment extends ListFragment {
             Bundle savedInstanceState) {
         // Create a new TextView and set its text to the fragment's section
         // number argument value.
-    	String[] strings = null;
+    	ArrayAdapter<?> aa = null;
+    	Object[] obj = null;
+        ListView listView = new ListView(myActivity);
     	
     	switch(getArguments().getInt(ARG_SECTION_NUMBER))
     	{
     		case 1:
-    			strings = new String[] { "Tournament1", "Tournamnet2", "Tournament3" };
-    			EDIT_ACTIVITY = "Tournamnet";
+    			//strings = new String[] { "Tournament1", "Tournamnet2", "Tournament3" };
+    			EDIT_ACTIVITY = "Tournament";
     			break;
     		case 2:
-    			strings = new String[] { "Tour1", "Tour2", "Tour3" };
+    			obj = new String[] { "Tour1", "Tour2", "Tour3" };
     			EDIT_ACTIVITY = "Tour";
     			break;
     		case 3:
-    			strings = new String[] { "Odd", "PŒl", "Anders" };
+    			obj = new String[] { "Odd", "PŒl", "Anders" };
     			EDIT_ACTIVITY = "Player";
+    			
     			break;
     		case 4:
-    			strings = new String[] { "Gr¿nmo", "Quinta da Marhina", "Valderama" };
+    			obj = new String[] { "Gr¿nmo", "Quinta da Marhina", "Valderama" };
     			EDIT_ACTIVITY = "Course";
     			break;
     		default:
-    			strings = new String[] { "...Loading..." };
+    			obj = new String[] { "...Loading..." };
     	
     	}
     	
-    
-    	
-    	
-    	
-    	
-        ListView listView = new ListView(myActivity);
-        ArrayAdapter<String> aa = new ArrayAdapter<String>(listView.getContext(),
-        												   android.R.layout.simple_list_item_1,
-        												   android.R.id.text1,
-        												   strings); 
+    	if(EDIT_ACTIVITY.equals("Tournament"))
+    	{
+  			obj = new GolfTournament[] {
+					new GolfTournament(1,"Oslo Open"),
+					new GolfTournament(2,"Portugal dag 1"),
+					new GolfTournament(3, "Gr¿nmo dag 1")
+				};
+			aa = new GolfTournamentAdapter (listView.getContext(),
+											R.layout.listview_tournament_row, 
+											(GolfTournament[])obj);
+	
+    	}
+    	else
+    	{
+    		aa = new ArrayAdapter<String>(listView.getContext(),
+        								  android.R.layout.simple_list_item_1,
+        								  android.R.id.text1,
+        								  (String[]) obj); 
         
-        listView.setAdapter(aa); 
-       
-        
+    	}
+    	listView.setAdapter(aa); 
         return listView;
     }	
 	
