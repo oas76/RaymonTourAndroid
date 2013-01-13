@@ -6,6 +6,7 @@
     android:padding="10dp" >
     
     <ImageView android:id="@+id/imgIcon"
+        android:contentDescription="@string/thumbs_image"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"

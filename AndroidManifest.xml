@@ -29,6 +29,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
+        <activity
+            android:name="com.oas76.RaymonTour.PlayerEdit"
+            android:label="@string/title_activity_player_edit" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.oas76.RaymonTour.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

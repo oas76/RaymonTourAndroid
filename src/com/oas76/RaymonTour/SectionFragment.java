@@ -31,9 +31,33 @@ public final class SectionFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View view, int pos, long id)
     {
-    	//Toast.makeText(myActivity,"Click",Toast.LENGTH_LONG).show();
-    	Intent intent = new Intent(myActivity, TournamentEdit.class);
-    	startActivity(intent);
+    	Intent intent = null;
+    	
+    	switch(getArguments().getInt(ARG_SECTION_NUMBER))
+    	{
+    		case 1:
+    			EDIT_ACTIVITY = "Tournament";
+    			intent = new Intent(myActivity, TournamentEdit.class);
+    			break;
+    		case 2:
+    			EDIT_ACTIVITY = "Tour";
+    			//intent = new Intent(myActivity, TourEdit.class);
+    			break;
+    		case 3:
+    			EDIT_ACTIVITY = "Player";
+    			intent = new Intent(myActivity, PlayerEdit.class);
+    			break;
+    		case 4:
+    			EDIT_ACTIVITY = "Course";
+    			//intent = new Intent(myActivity, CourseEdit.class);
+    			break;
+    			
+    	}
+    	
+    	if(intent != null)
+    		startActivity(intent);
+    	else
+    		Toast.makeText(myActivity,"Click",Toast.LENGTH_LONG).show();
     }
     
     
@@ -49,7 +73,6 @@ public final class SectionFragment extends ListFragment {
     	switch(getArguments().getInt(ARG_SECTION_NUMBER))
     	{
     		case 1:
-    			//strings = new String[] { "Tournament1", "Tournamnet2", "Tournament3" };
     			EDIT_ACTIVITY = "Tournament";
     			break;
     		case 2:
@@ -62,7 +85,6 @@ public final class SectionFragment extends ListFragment {
     			
     			break;
     		case 4:
-    			obj = new String[] { "Gr¿nmo", "Quinta da Marhina", "Valderama" };
     			EDIT_ACTIVITY = "Course";
     			break;
     		default:
@@ -70,6 +92,7 @@ public final class SectionFragment extends ListFragment {
     	
     	}
     	
+   	
     	if(EDIT_ACTIVITY.equals("Tournament"))
     	{
   			obj = new GolfTournament[] {
@@ -82,6 +105,35 @@ public final class SectionFragment extends ListFragment {
 											(GolfTournament[])obj);
 	
     	}
+    	else if(EDIT_ACTIVITY.equals("Course"))
+    	{
+    		GolfCourse course1 = new GolfCourse(1,"Gr¿nmo");
+    		GolfCourse course2 = new GolfCourse(2,"Oslo GK");
+    		GolfCourse course3 = new GolfCourse(3,"Quinta Da Mahrina");
+    		
+    		obj = new GolfCourse[] {
+    				course1,
+    				course2,
+    				course3
+    		};
+    		aa = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, (GolfCourse[])obj);
+    		
+    	}
+    	else if(EDIT_ACTIVITY.equals("Player"))
+    	{
+    		GolfPlayer player1 = new GolfPlayer(1, "PŒggen");
+    		GolfPlayer player2 = new GolfPlayer(2, "SMU");
+    		GolfPlayer player3 = new GolfPlayer(3, "Andy");
+    		GolfPlayer player4 = new GolfPlayer(4, "Oddis");
+    		
+    		obj = new GolfPlayer[] {
+    				player1,
+    				player2,
+    				player3,
+    				player4
+    		};
+    		aa = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, (GolfPlayer[])obj);
+    	}
     	else
     	{
     		aa = new ArrayAdapter<String>(listView.getContext(),
@@ -90,6 +142,7 @@ public final class SectionFragment extends ListFragment {
         								  (String[]) obj); 
         
     	}
+    	
     	listView.setAdapter(aa); 
         return listView;
     }	

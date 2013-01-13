@@ -9,13 +9,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
+public class GolfPlayerAdapter extends ArrayAdapter<GolfPlayer> {
 
 	    Context context; 
 	    int layoutResourceId;    
-	    GolfTournament data[] = null;
+	    GolfPlayer data[] = null;
 	    
-	    public GolfTournamentAdapter(Context context, int layoutResourceId, GolfTournament[] data) {
+	    public GolfPlayerAdapter(Context context, int layoutResourceId, GolfPlayer[] data) {
 	        super(context, layoutResourceId, data);
 	        this.layoutResourceId = layoutResourceId;
 	        this.context = context;
@@ -25,34 +25,38 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	    @Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
 	        View row = convertView;
-	        TournamentHolder holder = null;
+	        PlayerHolder holder = null;
 	        
 	        if(row == null)
 	        {
 	            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 	            row = inflater.inflate(layoutResourceId, parent, false);
 	            
-	            holder = new TournamentHolder();
+	            holder = new PlayerHolder();
 	            holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
-	            holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
+	            holder.txtTitle = (TextView)row.findViewById(R.id.courseName);
+	            holder.txtDetails = (TextView)row.findViewById(R.id.courceDetails);
 	            
 	            row.setTag(holder);
 	        }
 	        else
 	        {
-	            holder = (TournamentHolder)row.getTag();
+	            holder = (PlayerHolder)row.getTag();
 	        }
 	        
-	        GolfTournament tournament = data[position];
-	        holder.txtTitle.setText(tournament.getTournamentName());
+	        GolfPlayer player = data[position];
+	        holder.txtTitle.setText(player.getNick());
+	        holder.txtDetails.setText("div details ++++");
 	        holder.imgIcon.setImageResource(R.drawable.ic_launcher);
 	        
 	        return row;
 	    }
 	    
-	    static class TournamentHolder
+	    static class PlayerHolder
 	    {
 	        ImageView imgIcon;
 	        TextView txtTitle;
+	        TextView txtDetails;
 	    }
 	}
+
