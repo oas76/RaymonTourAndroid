@@ -107,6 +107,7 @@ public class GolfPlayer {
 	public int getStroke(int hole){
 		return pScore[hole-1][STROKE];
 	}
+	*/
 
 	public void setPlayerName(String name)
 	{
@@ -135,6 +136,6 @@ public class GolfPlayer {
 	}
 	
 	
-	*/
+	
 
 }

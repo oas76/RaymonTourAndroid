@@ -16,12 +16,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
 
@@ -30,6 +34,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
      * current dropdown position.
      */
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+    
+    private static ImageButton addButton = null;
+    private static int SELECTED_VIEW = 1;
+    
+    private static final int SELECT_TOURNAMENT = 1;
+    private static final int SELECT_TOUR = 2;
+    private static final int SELECT_PLAYER = 3;
+    private static final int SELECT_COURSE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +53,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         String[] menu_strings = new String[4];
-        menu_strings[0] = getString(R.string.title_section1);
-        menu_strings[1] = getString(R.string.title_section2);
-        menu_strings[2] = getString(R.string.title_section3);
-        menu_strings[3] = getString(R.string.title_section4);
+        menu_strings[SELECT_TOURNAMENT-1] = getString(R.string.title_section1);
+        menu_strings[SELECT_TOUR-1] = getString(R.string.title_section2);
+        menu_strings[SELECT_PLAYER-1] = getString(R.string.title_section3);
+        menu_strings[SELECT_COURSE-1] = getString(R.string.title_section4);
 
         // Set up the dropdown list navigation in the action bar.
         actionBar.setListNavigationCallbacks(
@@ -55,6 +67,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
                         android.R.id.text1,
                         menu_strings),
                 this);
+        // Get Reference to the AddButton
+        addButton = (ImageButton)findViewById(R.id.addButon);
+        hookupButton();
     }
 
 
@@ -92,6 +107,35 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+        SELECTED_VIEW = position + 1;
         return true;
     }
+    
+    private void hookupButton()
+    {
+    	addButton.setOnClickListener(new OnClickListener() {
+    		public void onClick(View v){
+    			Intent intent = null;
+    			switch(SELECTED_VIEW)
+    			{
+    				case SELECT_TOURNAMENT:
+    					break;
+    				case SELECT_TOUR:
+    					break;
+    				case SELECT_PLAYER:
+    					//Send intent to edit player view
+    					intent = new Intent(v.getContext(),PlayerEdit.class);
+    					break;
+    				case SELECT_COURSE:
+    					break;
+    			
+    			}
+    			if(intent != null)
+    	    		startActivity(intent);
+    	    	else
+    	    		Toast.makeText(v.getContext(),"TBD",Toast.LENGTH_LONG).show();
+    		}
+    	});
+    }
+    
 }

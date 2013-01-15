@@ -1,23 +1,37 @@
 package com.oas76.RaymonTour;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-public final class SectionFragment extends ListFragment {
+public final class SectionFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	
     public static final String ARG_SECTION_NUMBER = "section_number";
+    private static final int TOURNAMENT_LOADER_ID = 0;
+    private static final int TOUR_LOADER_ID = 1;
+    private static final int PLAYER_LOADER_ID = 2;
+    private static final int COURSE_LOADER_ID = 3;
+    
     private static String EDIT_ACTIVITY = "Tournamnet";
     private static Activity myActivity = null;
+    
+	ArrayList<GolfPlayer> playerlist = new ArrayList<GolfPlayer>();
+	ArrayAdapter<GolfPlayer>ap = null;
+	ListView listView = null;
 
     
     @Override
@@ -68,7 +82,7 @@ public final class SectionFragment extends ListFragment {
         // number argument value.
     	ArrayAdapter<?> aa = null;
     	Object[] obj = null;
-        ListView listView = new ListView(myActivity);
+        listView = new ListView(myActivity);
     	
     	switch(getArguments().getInt(ARG_SECTION_NUMBER))
     	{
@@ -121,6 +135,7 @@ public final class SectionFragment extends ListFragment {
     	}
     	else if(EDIT_ACTIVITY.equals("Player"))
     	{
+    		/*
     		GolfPlayer player1 = new GolfPlayer(1, "PŒggen");
     		GolfPlayer player2 = new GolfPlayer(2, "SMU");
     		GolfPlayer player3 = new GolfPlayer(3, "Andy");
@@ -132,8 +147,13 @@ public final class SectionFragment extends ListFragment {
     				player3,
     				player4
     		};
-    		aa = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, (GolfPlayer[])obj);
+    		*/
+  
+    		ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
+        	listView.setAdapter(ap); 
+
     	}
+    	
     	else
     	{
     		aa = new ArrayAdapter<String>(listView.getContext(),
@@ -143,9 +163,92 @@ public final class SectionFragment extends ListFragment {
         
     	}
     	
-    	listView.setAdapter(aa); 
-        return listView;
-    }	
+
+    	return listView;
+    }
+
+
+	
+	@Override
+	public void onActivityCreated(Bundle b)
+	{
+			super.onActivityCreated(b);
+
+            getLoaderManager().initLoader(PLAYER_LOADER_ID,null,this);
+            getLoaderManager().initLoader(TOUR_LOADER_ID,null,this);
+            getLoaderManager().initLoader(TOURNAMENT_LOADER_ID,null,this);
+            getLoaderManager().initLoader(COURSE_LOADER_ID,null,this);
+            
+	}
+	
+
+    
+    @Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		CursorLoader loader = null;
+		switch(id)
+		{
+			case PLAYER_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_PLAYERS,null,null,null,null);
+		}
+		
+		return loader;
+	}
+	
+
+
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		switch(loader.getId())
+		{
+			case PLAYER_LOADER_ID:
+				int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+				int nic_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NIC);
+				int full_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
+				int hc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
+				int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+				
+				if(ap != null)
+					ap.clear();
+				else
+					playerlist.clear();
+				
+				while(cursor.moveToNext())
+				{
+					GolfPlayer newPlayer = new GolfPlayer(cursor.getInt(index));
+					newPlayer.setPlayerName(cursor.getString(full_index));
+					newPlayer.setPlayerNick(cursor.getString(nic_index));
+					newPlayer.setPlayerImg(cursor.getString(img_index));
+					newPlayer.setPlayerHC(cursor.getDouble(hc_index));
+					
+					if(ap != null)
+					{
+						ap.add(newPlayer);
+						ap.notifyDataSetChanged();
+					}
+					else
+					{
+						playerlist.add(newPlayer);
+					}
+				}
+
+				
+		}
+		
+	}
+
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		switch(loader.getId())
+		{
+			case PLAYER_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_PLAYERS,null,null,null,null);
+		}
+		
+		
+	}	
 	
 }
 
