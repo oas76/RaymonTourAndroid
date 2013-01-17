@@ -15,5 +15,6 @@
     <string name="handicap">Handicap</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_player_edit">PlayerEdit</string>
+    <string name="title_activity_player_view">PlayerView</string>
 
 </resources>

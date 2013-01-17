@@ -13,6 +13,7 @@
     	android:clickable="false"
     	android:focusable="false"/>
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/buttonBar"
 	    android:layout_alignParentBottom="true"
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"

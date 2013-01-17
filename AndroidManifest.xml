@@ -36,11 +36,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
+         <activity
+            android:name="com.oas76.RaymonTour.PlayerView"
+            android:label="@string/title_activity_player_view" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.oas76.RaymonTour.MainActivity" />
+        </activity>
+
         <provider
-            android:name=".TourContentProvider"
+            android:name="com.oas76.RaymonTour.TourContentProvider"
             android:authorities="com.oas76.raymontour"
             android:exported="false" >
         </provider>
+
+
     </application>
 
 </manifest>

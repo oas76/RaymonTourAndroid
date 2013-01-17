@@ -59,7 +59,10 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			break;
     		case 3:
     			EDIT_ACTIVITY = "Player";
-    			intent = new Intent(myActivity, PlayerEdit.class);
+    			GolfPlayer player = (GolfPlayer)l.getItemAtPosition(pos);
+    			int player_id = player.getPlayerID();
+    			intent = new Intent(myActivity, PlayerView.class);
+    			intent.putExtra("id", player_id);
     			break;
     		case 4:
     			EDIT_ACTIVITY = "Course";

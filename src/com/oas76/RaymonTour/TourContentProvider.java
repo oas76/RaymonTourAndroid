@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class TourContentProvider extends ContentProvider {
 
@@ -84,13 +85,19 @@ public class TourContentProvider extends ContentProvider {
   public Cursor query(Uri uri, String[] projection, String selection,
     String[] selectionArgs, String sortOrder) {
 
-    // Open thedatabase.
-    SQLiteDatabase db;
-    try {
-      db = myOpenHelper.getWritableDatabase();
-    } catch (SQLiteException ex) {
-      db = myOpenHelper.getReadableDatabase();
-    }
+    // Open the database.
+	if(myOpenHelper == null)
+	{
+	   Toast.makeText(getContext(),"Whaaat",Toast.LENGTH_LONG).show();
+	   return null;
+	}
+	
+    SQLiteDatabase db = myOpenHelper.getReadableDatabase();
+   // try {
+   //   db = myOpenHelper.getWritableDatabase();
+   // } catch (/*SQLite*/Exception ex) {
+   //   db = myOpenHelper.getReadableDatabase();
+   // }
 
     // Replace these with valid SQL statements if necessary.
     String groupBy = null;
