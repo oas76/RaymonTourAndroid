@@ -1,40 +1,82 @@
 package com.oas76.RaymonTour;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 
 public class PlayerEdit extends Activity  {
 
-	ImageButton verifyButton = null;	
+	ImageButton verifyButton = null;
+	boolean editPlayer = false;
+	int id = -1;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		id = -1;
+		editPlayer = false;
+				
 		setContentView(R.layout.activity_player_edit);
+		
+		if(getIntent().getExtras() != null)
+		{
+			id = getIntent().getExtras().getInt("id");
+			ContentResolver cp = getContentResolver();
+			Cursor cursorData = cp.query(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS, Integer.toString(id)), null, null, null, null);
+
+			if(cursorData != null && cursorData.getCount() == 1)
+			{
+				cursorData.moveToFirst();
+				
+				TextView nic = (TextView)findViewById(R.id.player_nic);
+				TextView name = (TextView)findViewById(R.id.player_full);
+				TextView hc = (TextView)findViewById(R.id.player_hc);
+				TextView winnings = (TextView)findViewById(R.id.player_winnings);
+				
+				int nic_index = cursorData.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NIC);
+				int name_index = cursorData.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
+				int hc_index = cursorData.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
+				int winnings_index = cursorData.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_WINNINGS);
+				
+				nic.setText(cursorData.getString(nic_index));
+				name.setText(cursorData.getString(name_index));
+				hc.setText(Double.toString(cursorData.getDouble(hc_index)));
+				winnings.setText("Total Winnings: " + String.valueOf(cursorData.getInt(winnings_index)));
+			}
+	
+			editPlayer = true;
+			
+		}
+
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 		verifyButton = (ImageButton)findViewById(R.id.player_verify);
 		hookupButton();
 	}
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_player_edit, menu);
 		return true;
 	}
+	*/
 
+	/*
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -51,6 +93,7 @@ public class PlayerEdit extends Activity  {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	*/
 	
 	private void hookupButton(){
 		final Activity context = this;
@@ -68,15 +111,6 @@ public class PlayerEdit extends Activity  {
 				}
 				else
 				{
-					try {
-						dhc = Double.parseDouble(hc);
-						}
-					catch(Exception e)
-					{
-						Toast.makeText(v.getContext(),"Handicap must be numerical",Toast.LENGTH_LONG).show();
-						return;
-					}
-
 					Toast.makeText(v.getContext(),"Added:" + nic + ":" + name + ":" + hc,Toast.LENGTH_LONG).show();
 					ContentValues values = new ContentValues();
 					ContentResolver cr = getContentResolver();
@@ -85,12 +119,14 @@ public class PlayerEdit extends Activity  {
 					values.put(TourContentProvider.KEY_PLAYER_NAME, name);
 					values.put(TourContentProvider.KEY_PLAYER_HC, dhc);
 					
-					cr.insert(TourContentProvider.CONTENT_URI_PLAYERS, values);
-					
-					//((EditText)findViewById(R.id.player_nic)).setText("");
-					//((EditText)findViewById(R.id.player_full)).setText("");
-					//((EditText)findViewById(R.id.player_hc)).setText("");
-					finish();
+					if(id > -1 && editPlayer)
+						cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS,Integer.toString(id)), values, null, null);
+					else
+					{
+						cr.insert(TourContentProvider.CONTENT_URI_PLAYERS, values);
+					}
+					context.onBackPressed();
+	
 				}
 				
 			}

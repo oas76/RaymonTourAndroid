@@ -59,7 +59,7 @@ public class GolfPlayerAdapter extends ArrayAdapter<GolfPlayer> {
 	        
 	        GolfPlayer player = listdata.get(position);
 	        holder.txtTitle.setText(player.getNick());
-	        holder.txtDetails.setText("div details ++++");
+	        holder.txtDetails.setText("HC: " + String.valueOf(player.getPlayerHC()));
 	        holder.imgIcon.setImageResource(R.drawable.ic_launcher);
 	        
 	        return row;

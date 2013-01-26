@@ -1,5 +1,7 @@
 package com.oas76.RaymonTour;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,16 +15,18 @@ public class GolfCourseAdapter extends ArrayAdapter<GolfCourse> {
 
 	    Context context; 
 	    int layoutResourceId;    
-	    GolfCourse data[] = null;
+	    ArrayList<GolfCourse> data = null;
 	    
-	    public GolfCourseAdapter(Context context, int layoutResourceId, GolfCourse[] data) {
-	        super(context, layoutResourceId, data);
-	        this.layoutResourceId = layoutResourceId;
-	        this.context = context;
-	        this.data = data;
-	    }
 
-	    @Override
+	    public GolfCourseAdapter(Context context2, int listviewCourseRow,
+				ArrayList<GolfCourse> courselist) {
+	        super(context2, listviewCourseRow, courselist);
+	        this.layoutResourceId = listviewCourseRow;
+	        this.context = context2;
+	        this.data = courselist;
+		}
+
+		@Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
 	        View row = convertView;
 	        CourseHolder holder = null;
@@ -44,9 +48,9 @@ public class GolfCourseAdapter extends ArrayAdapter<GolfCourse> {
 	            holder = (CourseHolder)row.getTag();
 	        }
 	        
-	        GolfCourse course = data[position];
-	        holder.txtTitle.setText(course.getCourceName());
-	        holder.txtDetails.setText("div details ++++");
+	        GolfCourse course = data.get(position);
+	        holder.txtTitle.setText(course.getCourceName() + " ( " + course.getCourceTee() + " )");
+	        holder.txtDetails.setText("Par: " + Integer.toString(course.getCourcePar()) + " Length: " + String.valueOf(course.getCourceLength()) + " C.R/Slope: " + String.valueOf(course.getCourceValue()) + "/" + course.getCourceSlope());
 	        holder.imgIcon.setImageResource(R.drawable.ic_launcher);
 	        
 	        return row;

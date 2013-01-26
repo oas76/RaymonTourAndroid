@@ -1,7 +1,16 @@
 package com.oas76.RaymonTour;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -10,6 +19,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +35,18 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     private static final int TOUR_LOADER_ID = 1;
     private static final int PLAYER_LOADER_ID = 2;
     private static final int COURSE_LOADER_ID = 3;
+    private static final int HOLE_LOADER_ID = 4;
     
     private static String EDIT_ACTIVITY = "Tournamnet";
     private static Activity myActivity = null;
     
 	ArrayList<GolfPlayer> playerlist = new ArrayList<GolfPlayer>();
-	ArrayAdapter<GolfPlayer>ap = null;
+	ArrayAdapter<GolfPlayer> ap = null;
+	ArrayList<GolfCourse> courselist = new ArrayList<GolfCourse>();
+	ArrayAdapter<GolfCourse> ac = null;
+	ArrayList<GolfTournament> tournamentlist = new ArrayList<GolfTournament>();
+	ArrayAdapter<GolfTournament> at = null;
+	
 	ListView listView = null;
 
     
@@ -40,7 +56,6 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	super.onAttach(act);
    		myActivity = act;
     }
-    
     
     @Override
     public void onListItemClick(ListView l, View view, int pos, long id)
@@ -61,7 +76,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			EDIT_ACTIVITY = "Player";
     			GolfPlayer player = (GolfPlayer)l.getItemAtPosition(pos);
     			int player_id = player.getPlayerID();
-    			intent = new Intent(myActivity, PlayerView.class);
+    			intent = new Intent(myActivity, PlayerEdit.class);
     			intent.putExtra("id", player_id);
     			break;
     		case 4:
@@ -93,13 +108,11 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			EDIT_ACTIVITY = "Tournament";
     			break;
     		case 2:
-    			obj = new String[] { "Tour1", "Tour2", "Tour3" };
     			EDIT_ACTIVITY = "Tour";
+    			obj = new String[] { "...Loading..." };
     			break;
     		case 3:
-    			obj = new String[] { "Odd", "PŒl", "Anders" };
-    			EDIT_ACTIVITY = "Player";
-    			
+    			EDIT_ACTIVITY = "Player";   			
     			break;
     		case 4:
     			EDIT_ACTIVITY = "Course";
@@ -112,51 +125,20 @@ public final class SectionFragment extends ListFragment implements LoaderManager
    	
     	if(EDIT_ACTIVITY.equals("Tournament"))
     	{
-  			obj = new GolfTournament[] {
-					new GolfTournament(1,"Oslo Open"),
-					new GolfTournament(2,"Portugal dag 1"),
-					new GolfTournament(3, "Gr¿nmo dag 1")
-				};
-			aa = new GolfTournamentAdapter (listView.getContext(),
-											R.layout.listview_tournament_row, 
-											(GolfTournament[])obj);
-	
+  			at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
+  			listView.setAdapter(at);
     	}
     	else if(EDIT_ACTIVITY.equals("Course"))
-    	{
-    		GolfCourse course1 = new GolfCourse(1,"Gr¿nmo");
-    		GolfCourse course2 = new GolfCourse(2,"Oslo GK");
-    		GolfCourse course3 = new GolfCourse(3,"Quinta Da Mahrina");
-    		
-    		obj = new GolfCourse[] {
-    				course1,
-    				course2,
-    				course3
-    		};
-    		aa = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, (GolfCourse[])obj);
-    		
+    	{   		
+    		ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
+        	listView.setAdapter(ac); 
     	}
     	else if(EDIT_ACTIVITY.equals("Player"))
     	{
-    		/*
-    		GolfPlayer player1 = new GolfPlayer(1, "PŒggen");
-    		GolfPlayer player2 = new GolfPlayer(2, "SMU");
-    		GolfPlayer player3 = new GolfPlayer(3, "Andy");
-    		GolfPlayer player4 = new GolfPlayer(4, "Oddis");
-    		
-    		obj = new GolfPlayer[] {
-    				player1,
-    				player2,
-    				player3,
-    				player4
-    		};
-    		*/
-  
     		ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
         	listView.setAdapter(ap); 
 
-    	}
-    	
+    	}   	
     	else
     	{
     		aa = new ArrayAdapter<String>(listView.getContext(),
@@ -193,6 +175,17 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 		{
 			case PLAYER_LOADER_ID:
 				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_PLAYERS,null,null,null,null);
+				break;
+			case COURSE_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_COURSES,null,null,null,null);
+				break;
+			case HOLE_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_HOLES,null,null,null,null);
+				break;
+			case TOURNAMENT_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_TOURNAMENTS,null,null,null,null);
+				break;
+
 		}
 		
 		return loader;
@@ -203,41 +196,115 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		switch(loader.getId())
+		if(cursor != null)
 		{
-			case PLAYER_LOADER_ID:
-				int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
-				int nic_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NIC);
-				int full_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
-				int hc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
-				int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+			switch(loader.getId())
+			{
+				case PLAYER_LOADER_ID:
+					int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+					int nic_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NIC);
+					int full_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
+					int hc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
+					int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
 				
-				if(ap != null)
-					ap.clear();
-				else
-					playerlist.clear();
-				
-				while(cursor.moveToNext())
-				{
-					GolfPlayer newPlayer = new GolfPlayer(cursor.getInt(index));
-					newPlayer.setPlayerName(cursor.getString(full_index));
-					newPlayer.setPlayerNick(cursor.getString(nic_index));
-					newPlayer.setPlayerImg(cursor.getString(img_index));
-					newPlayer.setPlayerHC(cursor.getDouble(hc_index));
-					
 					if(ap != null)
-					{
-						ap.add(newPlayer);
-						ap.notifyDataSetChanged();
-					}
+						ap.clear();
 					else
-					{
-						playerlist.add(newPlayer);
-					}
-				}
-
+						playerlist.clear();
 				
-		}
+					while(cursor.moveToNext())
+					{
+						GolfPlayer newPlayer = new GolfPlayer(cursor.getInt(index));
+						newPlayer.setPlayerName(cursor.getString(full_index));
+						newPlayer.setPlayerNick(cursor.getString(nic_index));
+						newPlayer.setPlayerImg(cursor.getString(img_index));
+						newPlayer.setPlayerHC(cursor.getDouble(hc_index));
+					
+						if(ap != null)
+						{
+							ap.add(newPlayer);
+							ap.notifyDataSetChanged();
+						}
+						else
+						{
+							playerlist.add(newPlayer);
+						}
+					}
+					break;
+				case COURSE_LOADER_ID:
+					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+					int name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_NAME);
+					int tee_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_TEE);
+					int length_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_LENGTH);
+					int slope_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_SLOPE);
+					int value_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_VALUE);
+					int par_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_PAR);
+					//int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+				
+					if(ac != null)
+						ac.clear();
+					else
+						courselist.clear();
+				
+					while(cursor.moveToNext())
+					{
+						GolfCourse newCourse = new GolfCourse(cursor.getInt(index));
+						newCourse.setCourceName(cursor.getString(name_index));
+						newCourse.setCourceTee(cursor.getString(tee_index));
+						newCourse.setCourcePar(cursor.getInt(par_index));
+						newCourse.setCourceLength(cursor.getInt(length_index));
+						newCourse.setCourceSlope(cursor.getInt(slope_index));
+						newCourse.setCourceValue(cursor.getDouble(value_index));
+					
+						if(ac != null)
+						{
+							ac.add(newCourse);
+							ac.notifyDataSetChanged();
+						}
+						else
+						{
+							courselist.add(newCourse);
+						}
+					}
+					break;
+				case TOURNAMENT_LOADER_ID:
+					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+					//int name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_NAME);
+					//int tee_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_TEE);
+					//int length_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_LENGTH);
+					//int slope_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_SLOPE);
+					//int value_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_VALUE);
+					//int par_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_PAR);
+					//int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+				
+					if(at != null)
+						at.clear();
+					else
+						tournamentlist.clear();
+				
+					while(cursor.moveToNext())
+					{
+						GolfTournament newTournament = new GolfTournament(cursor.getInt(index));
+						//newCourse.setCourceName(cursor.getString(name_index));
+						//newCourse.setCourceTee(cursor.getString(tee_index));
+						//newCourse.setCourcePar(cursor.getInt(par_index));
+						//newCourse.setCourceLength(cursor.getInt(length_index));
+						//newCourse.setCourceSlope(cursor.getInt(slope_index));
+						//newCourse.setCourceValue(cursor.getDouble(value_index));
+					
+						if(at != null)
+						{
+							at.add(newTournament);
+							at.notifyDataSetChanged();
+						}
+						else
+						{
+							tournamentlist.add(newTournament);
+						}
+					}
+					break;
+			} //switch
+		}// if cursor != null
 		
 	}
 
@@ -248,11 +315,29 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 		{
 			case PLAYER_LOADER_ID:
 				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_PLAYERS,null,null,null,null);
+				break;
+			case COURSE_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_COURSES,null,null,null,null);
+				break;
+			case HOLE_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_HOLES,null,null,null,null);
+				break;
+			case TOURNAMENT_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_TOURNAMENTS,null,null,null,null);
+				break;
+
+
 		}
 		
 		
 	}	
+
+	
+	
+
 	
 }
+
+
 
 

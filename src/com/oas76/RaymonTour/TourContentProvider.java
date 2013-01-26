@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
@@ -23,6 +24,9 @@ import android.widget.Toast;
 public class TourContentProvider extends ContentProvider {
 
   public static final Uri CONTENT_URI_PLAYERS = Uri.parse("content://com.oas76.raymontour/players");
+  public static final Uri CONTENT_URI_COURSES = Uri.parse("content://com.oas76.raymontour/courses");
+  public static final Uri CONTENT_URI_HOLES = Uri.parse("content://com.oas76.raymontour/holes");
+  public static final Uri CONTENT_URI_TOURNAMENTS = Uri.parse("content://com.oas76.raymontour/tournaments");
   
   /**
    * Listing 8-8: Defining a UriMatcher to determine if a request is for all elements or a single row
@@ -43,6 +47,19 @@ public class TourContentProvider extends ContentProvider {
                      "players", ALLROWS);
    uriMatcher.addURI("com.oas76.raymontour", 
                      "players/#", SINGLE_ROW);
+   uriMatcher.addURI("com.oas76.raymontour", 
+           			 "courses", ALLROWS);
+   uriMatcher.addURI("com.oas76.raymontour", 
+           			 "courses/#", SINGLE_ROW);
+   uriMatcher.addURI("com.oas76.raymontour", 
+ 			         "holes", ALLROWS);
+   uriMatcher.addURI("com.oas76.raymontour", 
+ 			         "holes/#", SINGLE_ROW);
+   uriMatcher.addURI("com.oas76.raymontour", 
+	         		 "tournaments", ALLROWS);
+   uriMatcher.addURI("com.oas76.raymontour", 
+	         		 "tournaments/#", SINGLE_ROW);
+
   }
   /** */
   
@@ -58,7 +75,39 @@ public class TourContentProvider extends ContentProvider {
   static final String KEY_PLAYER_HC = "PlayerHc";
   static final String KEY_PLAYER_WINNINGS = "PlayerWinnings";
   static final String KEY_PLAYER_IMGURL = "PlayerImgUrl"; 
-  //private static final String KEY_PLAYER_ID = "PlayerId";
+  
+  // Golf Course Column names
+  static final String KEY_COURSE_NAME = "GolfCourseName";
+  static final String KEY_COURSE_TEE = "GolfCourseTee";
+  static final String KEY_COURSE_SLOPE = "GolfCourseSlope";
+  static final String KEY_COURSE_VALUE = "GolfCourseValue";
+  static final String KEY_COURSE_PAR = "GolfCoursePar";
+  static final String KEY_COURSE_LENGTH = "GolfCourseLength";
+	
+   // Golf Hole Column name
+  static final String KEY_COURSE_ID = "GolfCourseId";
+  static final String KEY_HOLE_NR = "GolfHoleNr";
+  static final String KEY_HOLE_PAR = "GolfHolePar";
+  static final String KEY_HOLE_INDEX = "GolfHoleIndex";
+  static final String KEY_HOLE_LENGTH = "GolfHoleLength";
+  static final String KEY_HOLE_NAME = "GolfHoleName";
+  
+  // Golf Tournament Table Columns names
+  static final String KEY_GOLF_MODE = "GolfMode";
+  static final String KEY_GOLF_GAME = "GolfGame";
+  static final String KEY_HANDICAPED = "Handicaped";
+  static final String KEY_INDIVIDUAL_CLS3 = "IndividualCLS3";
+  static final String KEY_NR_PLAYER = "NumberOfPlayers";
+  static final String KEY_NR_TEAMS  = "NumberOfTeam";
+  static final String KEY_STAKES = "StakesWin";
+  static final String KEY_STAKES_CLOSEST = "StakesWinClosest";
+  static final String KEY_STAKES_LONGEST = "StakesWinLongest";
+  static final String KEY_STAKES_SNAKE = "StakesWinSnake";
+  static final String KEY_STAKES_1PUT = "StakesWin1Put";
+  static final String KEY_TOURNAMENT_IMGURL = "TournamentImageURL";
+  static final String KEY_TOURNAMENT_NRHOLES = "TournamentNrOfHoles";
+  static final String KEY_TOURNAMENT_SPONSOR_PURSE = "TournamentSponsorPurse";
+  static final String KEY_TOURNAMENT_NAME = "TournamentName";
   
   
   /**
@@ -122,6 +171,18 @@ public class TourContentProvider extends ContentProvider {
     {
         queryBuilder.setTables(TourDatabase.TABLE_GOLFPLAYER);
     }
+    else if (table.equals("courses"))
+    {
+    	queryBuilder.setTables(TourDatabase.TABLE_GOLFCOURSE);
+    }
+    else if (table.equals("holes"))
+    {
+    	queryBuilder.setTables(TourDatabase.TABLE_GOLFHOLE);
+    }
+    else if (table.equals("tournaments"))
+    {
+    	queryBuilder.setTables(TourDatabase.TABLE_GOLFTOURNAMENT);
+    }
     // Execute the query.
     
     Cursor cursor = queryBuilder.query(db, projection, selection,
@@ -131,8 +192,24 @@ public class TourContentProvider extends ContentProvider {
     {
     	cursor.setNotificationUri(getContext().getContentResolver(), TourContentProvider.CONTENT_URI_PLAYERS);
     }
+    else if(table.equals("courses"))
+    {
+    	cursor.setNotificationUri(getContext().getContentResolver(), TourContentProvider.CONTENT_URI_COURSES);
+    }
+    else if(table.equals("holes"))
+    {
+    	cursor.setNotificationUri(getContext().getContentResolver(), TourContentProvider.CONTENT_URI_HOLES);
+    }
+    else if(table.equals("tournaments"))
+    {
+    	cursor.setNotificationUri(getContext().getContentResolver(), TourContentProvider.CONTENT_URI_TOURNAMENTS);
+    }
+    
 
     // Return the result Cursor.
+    if(cursor.getCount() == 0)
+    	cursor = null;
+    
     return cursor;
   }
   
@@ -151,6 +228,37 @@ public class TourContentProvider extends ContentProvider {
 				returnMime = "vnd.android.cursor.dir/vnd.oas76.raymontour.players";
 			case SINGLE_ROW: 
 				returnMime = "vnd.android.cursor.item/vnd.oas76.raymontour.players";
+			
+		}
+    }
+	else if(uri.getPathSegments().get(0).equals("courses")) 
+	{
+		switch (uriMatcher.match(uri)) {
+			case ALLROWS:
+				returnMime = "vnd.android.cursor.dir/vnd.oas76.raymontour.courses";
+			case SINGLE_ROW: 
+				returnMime = "vnd.android.cursor.item/vnd.oas76.raymontour.courses";
+			
+		}
+    }
+	else if(uri.getPathSegments().get(0).equals("holes")) 
+	{
+		switch (uriMatcher.match(uri)) {
+			case ALLROWS:
+				returnMime = "vnd.android.cursor.dir/vnd.oas76.raymontour.holes";
+			case SINGLE_ROW: 
+				returnMime = "vnd.android.cursor.item/vnd.oas76.raymontour.holes";
+			
+		}
+    }
+	
+	else if(uri.getPathSegments().get(0).equals("tournaments")) 
+	{
+		switch (uriMatcher.match(uri)) {
+			case ALLROWS:
+				returnMime = "vnd.android.cursor.dir/vnd.oas76.raymontour.tournaments";
+			case SINGLE_ROW: 
+				returnMime = "vnd.android.cursor.item/vnd.oas76.raymontour.tournaments";
 			
 		}
     }
@@ -194,6 +302,22 @@ public class TourContentProvider extends ContentProvider {
     	deleteCount = db.delete(TourDatabase.TABLE_GOLFPLAYER, 
     		      selection, selectionArgs);
     }
+    else if(table.equals("courses"))
+    {
+    	deleteCount = db.delete(TourDatabase.TABLE_GOLFCOURSE, 
+    		      selection, selectionArgs);
+    }
+    else if(table.equals("holes"))
+    {
+    	deleteCount = db.delete(TourDatabase.TABLE_GOLFHOLE, 
+    		      selection, selectionArgs);
+    }
+    
+    else if(table.equals("tournaments"))
+    {
+    	deleteCount = db.delete(TourDatabase.TABLE_GOLFTOURNAMENT, 
+    		      selection, selectionArgs);
+    }
 
     // Notify any observers of the change in the data set.
     getContext().getContentResolver().notifyChange(uri, null);
@@ -227,7 +351,29 @@ public class TourContentProvider extends ContentProvider {
                 nullColumnHack, values);
         contentURIRef = CONTENT_URI_PLAYERS;
         
-    }    
+    }   
+    else if(table.equals("courses"))
+    {
+        id = db.insert(TourDatabase.TABLE_GOLFCOURSE, 
+                nullColumnHack, values);
+        contentURIRef = CONTENT_URI_COURSES;
+        
+    } 
+    else if(table.equals("holes"))
+    {
+        id = db.insert(TourDatabase.TABLE_GOLFHOLE, 
+                nullColumnHack, values);
+        contentURIRef = CONTENT_URI_HOLES;
+        
+    } 
+    
+    else if(table.equals("tournaments"))
+    {
+        id = db.insert(TourDatabase.TABLE_GOLFTOURNAMENT, 
+                nullColumnHack, values);
+        contentURIRef = CONTENT_URI_TOURNAMENTS;
+        
+    } 
     // Construct and return the URI of the newly inserted row.
     if (id > -1) {
       // Construct and return the URI of the newly inserted row.
@@ -270,6 +416,22 @@ public class TourContentProvider extends ContentProvider {
         updateCount = db.update(TourDatabase.TABLE_GOLFPLAYER, 
         	      values, selection, selectionArgs);
     }    
+    else if(table.equals("courses"))
+    {
+        updateCount = db.update(TourDatabase.TABLE_GOLFCOURSE, 
+        	      values, selection, selectionArgs);
+    } 
+    else if(table.equals("holes"))
+    {
+        updateCount = db.update(TourDatabase.TABLE_GOLFHOLE, 
+        	      values, selection, selectionArgs);
+    }   
+    
+    else if(table.equals("tournaments"))
+    {
+        updateCount = db.update(TourDatabase.TABLE_GOLFTOURNAMENT, 
+        	      values, selection, selectionArgs);
+    }   
 
     // Notify any observers of the change in the data set.
     getContext().getContentResolver().notifyChange(uri, null);
@@ -289,8 +451,14 @@ public class TourContentProvider extends ContentProvider {
 	    
 	    //GOLF PLAYERS_DATABASE
 	    static final String TABLE_GOLFPLAYER = "GolfPlayerTable";
+	    static final String TABLE_GOLFCOURSE = "GolfCourseTable";
+	    static final String TABLE_GOLFHOLE = "GolfHoleTable";
+	    static final String TABLE_GOLFTOURNAMENT = "GolfTournamentTable";
 	    
 	    static final String CREATE_PLAYER_DB = "CREATE TABLE " + TABLE_GOLFPLAYER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PLAYER_NAME + " TEXT," + KEY_PLAYER_NIC + " TEXT," + KEY_PLAYER_HC + " REAL," + KEY_PLAYER_IMGURL + " TEXT," + KEY_PLAYER_WINNINGS + " INTEGER)";
+	    static final String CREATE_COURSE_DB = "CREATE TABLE " + TABLE_GOLFCOURSE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COURSE_NAME + " TEXT," + KEY_COURSE_TEE + " TEXT," + KEY_COURSE_PAR + " INTEGER," + KEY_COURSE_SLOPE + " INTEGER," + KEY_COURSE_VALUE + " REAL," + KEY_COURSE_LENGTH + " INTEGER)";
+	  	static final String	CREATE_HOLE_DB = "CREATE TABLE " + TABLE_GOLFHOLE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COURSE_ID + " INTEGER," + KEY_HOLE_NR + " INTEGER," + KEY_HOLE_PAR + " INTEGER," + KEY_HOLE_INDEX + " INTEGER," + KEY_HOLE_LENGTH + " INTEGER," + KEY_HOLE_NAME + " TEXT)";
+	    static final String CREATE_TOURNAMENT_DB = "CREATE TABLE " + TABLE_GOLFTOURNAMENT + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TOURNAMENT_NAME + " TEXT," + KEY_COURSE_ID + " INTEGER, " + KEY_TOURNAMENT_NRHOLES + " INTEGER," + KEY_GOLF_MODE + " INTEGER," + KEY_GOLF_GAME + " INTEGER," + KEY_HANDICAPED + " INTEGER," + KEY_INDIVIDUAL_CLS3 + " INTEGER," + KEY_NR_PLAYER + " INTEGER," + KEY_NR_TEAMS + " INTEGER," + KEY_STAKES + " INTEGER," + KEY_STAKES_CLOSEST + " INTEGER," + KEY_STAKES_LONGEST + " INTEGER," + KEY_STAKES_SNAKE + " INTEGER," + KEY_STAKES_1PUT + " INTEGER," + KEY_TOURNAMENT_SPONSOR_PURSE + "INTEGER, " + KEY_TOURNAMENT_IMGURL + " TEXT)"; 
 		
 	    
 	    
@@ -300,7 +468,18 @@ public class TourContentProvider extends ContentProvider {
 		
 	    @Override
 	    public void onCreate(SQLiteDatabase _db) {
-	      _db.execSQL(CREATE_PLAYER_DB);
+	      try
+	      {
+	    	  _db.execSQL(CREATE_PLAYER_DB);
+	    	  _db.execSQL(CREATE_COURSE_DB);
+	    	  _db.execSQL(CREATE_HOLE_DB);
+	    	  _db.execSQL(CREATE_TOURNAMENT_DB);
+	      }
+	      catch(SQLException e)
+	      {
+	    	  e.printStackTrace();
+	      }
+	      
 	    }
 	    
 	    @Override
@@ -316,6 +495,10 @@ public class TourContentProvider extends ContentProvider {
 
 	      // The simplest case is to drop the old table and create a new one.
 	      _db.execSQL("DROP TABLE IF IT EXISTS " + TABLE_GOLFPLAYER);
+	      _db.execSQL("DROP TABLE IF IT EXISTS " + TABLE_GOLFCOURSE);
+	      _db.execSQL("DROP TABLE IF IT EXISTS " + TABLE_GOLFHOLE);
+	      _db.execSQL("DROP TABLE IF IT EXISTS " + TABLE_GOLFTOURNAMENT);
+
 	      // Create a new one.
 	      onCreate(_db);
 	    }

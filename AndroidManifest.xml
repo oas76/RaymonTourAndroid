@@ -31,18 +31,13 @@
         </activity>
         <activity
             android:name="com.oas76.RaymonTour.PlayerEdit"
+            android:theme="@android:style/Theme.Holo.Dialog"
             android:label="@string/title_activity_player_edit" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
-         <activity
-            android:name="com.oas76.RaymonTour.PlayerView"
-            android:label="@string/title_activity_player_view" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.oas76.RaymonTour.MainActivity" />
-        </activity>
+ 
 
         <provider
             android:name="com.oas76.RaymonTour.TourContentProvider"
@@ -50,7 +45,9 @@
             android:exported="false" >
         </provider>
 
-
+        
     </application>
+    
+    <uses-permission android:name="android.permission.INTERNET" /> 
 
 </manifest>

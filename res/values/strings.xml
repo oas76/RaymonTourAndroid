@@ -16,5 +16,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_player_edit">PlayerEdit</string>
     <string name="title_activity_player_view">PlayerView</string>
+    <string name="title_activity_edit_course">EditCourse</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.oas76.RaymonTour;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,9 +15,9 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 
 	    Context context; 
 	    int layoutResourceId;    
-	    GolfTournament data[] = null;
+	    ArrayList<GolfTournament> data = null;
 	    
-	    public GolfTournamentAdapter(Context context, int layoutResourceId, GolfTournament[] data) {
+	    public GolfTournamentAdapter(Context context, int layoutResourceId, ArrayList<GolfTournament> data) {
 	        super(context, layoutResourceId, data);
 	        this.layoutResourceId = layoutResourceId;
 	        this.context = context;
@@ -43,7 +45,7 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	            holder = (TournamentHolder)row.getTag();
 	        }
 	        
-	        GolfTournament tournament = data[position];
+	        GolfTournament tournament = data.get(position);
 	        holder.txtTitle.setText(tournament.getTournamentName());
 	        holder.imgIcon.setImageResource(R.drawable.ic_launcher);
 	        
