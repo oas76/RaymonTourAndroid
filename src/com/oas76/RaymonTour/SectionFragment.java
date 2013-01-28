@@ -40,12 +40,15 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     private static String EDIT_ACTIVITY = "Tournamnet";
     private static Activity myActivity = null;
     
-	ArrayList<GolfPlayer> playerlist = new ArrayList<GolfPlayer>();
+	static ArrayList<GolfPlayer> playerlist = new ArrayList<GolfPlayer>();
 	ArrayAdapter<GolfPlayer> ap = null;
-	ArrayList<GolfCourse> courselist = new ArrayList<GolfCourse>();
+	static ArrayList<GolfCourse> courselist = new ArrayList<GolfCourse>();
 	ArrayAdapter<GolfCourse> ac = null;
-	ArrayList<GolfTournament> tournamentlist = new ArrayList<GolfTournament>();
+	static ArrayList<GolfTournament> tournamentlist = new ArrayList<GolfTournament>();
 	ArrayAdapter<GolfTournament> at = null;
+	static ArrayList<Tour> tourlist = new ArrayList<Tour>();
+	ArrayAdapter<Tour> atour = null;
+
 	
 	ListView listView = null;
 
@@ -66,11 +69,17 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	{
     		case 1:
     			EDIT_ACTIVITY = "Tournament";
+    			GolfTournament tournemanet = (GolfTournament)l.getItemAtPosition(pos);
+    			int tournament_id = tournemanet.getTournamentID();
     			intent = new Intent(myActivity, TournamentEdit.class);
+    			intent.putExtra("id", tournament_id);
     			break;
     		case 2:
     			EDIT_ACTIVITY = "Tour";
-    			//intent = new Intent(myActivity, TourEdit.class);
+    			Tour tour = (Tour)l.getItemAtPosition(pos);
+    			int tour_id = tour.getTourID();
+    			intent = new Intent(myActivity, TourEdit.class);
+    			intent.putExtra("id", tour_id);
     			break;
     		case 3:
     			EDIT_ACTIVITY = "Player";
@@ -96,11 +105,13 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        // Create a new TextView and set its text to the fragment's section
-        // number argument value.
-    	ArrayAdapter<?> aa = null;
     	Object[] obj = null;
-        listView = new ListView(myActivity);
+    	listView = new ListView(getActivity());
+    	at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
+    	ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
+    	ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
+    	atour = new GolfTourAdapter(listView.getContext(), R.layout.listview_course_row, tourlist);
+    	
     	
     	switch(getArguments().getInt(ARG_SECTION_NUMBER))
     	{
@@ -109,7 +120,6 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			break;
     		case 2:
     			EDIT_ACTIVITY = "Tour";
-    			obj = new String[] { "...Loading..." };
     			break;
     		case 3:
     			EDIT_ACTIVITY = "Player";   			
@@ -125,27 +135,25 @@ public final class SectionFragment extends ListFragment implements LoaderManager
    	
     	if(EDIT_ACTIVITY.equals("Tournament"))
     	{
-  			at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
+  			//at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
   			listView.setAdapter(at);
     	}
     	else if(EDIT_ACTIVITY.equals("Course"))
     	{   		
-    		ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
+    		//ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
         	listView.setAdapter(ac); 
     	}
     	else if(EDIT_ACTIVITY.equals("Player"))
     	{
-    		ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
+    		//ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
         	listView.setAdapter(ap); 
 
     	}   	
-    	else
+    	else if(EDIT_ACTIVITY.equals("Tour"))
     	{
-    		aa = new ArrayAdapter<String>(listView.getContext(),
-        								  android.R.layout.simple_list_item_1,
-        								  android.R.id.text1,
-        								  (String[]) obj); 
-        
+    		//atour = new GolfTourAdapter(listView.getContext(), R.layout.listview_course_row, tourlist);
+        	listView.setAdapter(atour); 
+ 
     	}
     	
 
@@ -163,6 +171,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
             getLoaderManager().initLoader(TOUR_LOADER_ID,null,this);
             getLoaderManager().initLoader(TOURNAMENT_LOADER_ID,null,this);
             getLoaderManager().initLoader(COURSE_LOADER_ID,null,this);
+            getLoaderManager().initLoader(HOLE_LOADER_ID,null,this);
             
 	}
 	
@@ -184,6 +193,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 				break;
 			case TOURNAMENT_LOADER_ID:
 				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_TOURNAMENTS,null,null,null,null);
+				break;
+			case TOUR_LOADER_ID:
+				loader = new CursorLoader(myActivity,TourContentProvider.CONTENT_URI_TOURS,null,null,null,null);
 				break;
 
 		}
@@ -239,7 +251,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					int slope_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_SLOPE);
 					int value_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_VALUE);
 					int par_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_PAR);
-					//int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+					int cimg_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_IMGURL);
 				
 					if(ac != null)
 						ac.clear();
@@ -255,6 +267,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						newCourse.setCourceLength(cursor.getInt(length_index));
 						newCourse.setCourceSlope(cursor.getInt(slope_index));
 						newCourse.setCourceValue(cursor.getDouble(value_index));
+						// setting Img Url
 					
 						if(ac != null)
 						{
@@ -303,7 +316,38 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						}
 					}
 					break;
+				case TOUR_LOADER_ID:
+					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+					name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_NAME);
+					int desc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_DESC);
+					img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_IMG);
+		
+					if(atour != null)
+						atour.clear();
+					else
+						tourlist.clear();
+		
+					while(cursor.moveToNext())
+					{
+						Tour newTour = new Tour(cursor.getInt(index));
+						newTour.setTourName(cursor.getString(name_index));
+						newTour.setTourDesc(cursor.getString(desc_index));
+						newTour.setTourImgUrl(cursor.getString(img_index));
+			
+						if(atour != null)
+						{
+							atour.add(newTour);
+							atour.notifyDataSetChanged();
+						}
+						else
+						{
+							tourlist.add(newTour);
+						}
+					}
+					break;
+					
 			} //switch
+			
 		}// if cursor != null
 		
 	}

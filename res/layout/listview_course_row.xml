@@ -23,11 +23,11 @@
             android:layout_width="fill_parent"
             android:gravity="center_vertical"
         	android:textStyle="bold"
-        	android:textSize="22sp"
+        	android:textSize="18sp"
         	android:layout_marginTop="5dp"
         	android:layout_marginBottom="5dp" />
         <TextView android:id="@+id/courceDetails"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/courseName"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:gravity="center_vertical"

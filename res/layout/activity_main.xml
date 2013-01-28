@@ -6,16 +6,17 @@
     tools:ignore="MergeRootFrame">
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:id="@+id/container"
-    	android:layout_alignParentTop="true"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
+    	android:layout_alignParentTop="true"
+    	android:layout_above="@+id/buttonBar"
     	android:background="@drawable/background_color"
     	android:clickable="false"
     	android:focusable="false"/>
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:id="@+id/buttonBar"
 	    android:layout_alignParentBottom="true"
-	    android:layout_height="wrap_content"
+	    android:layout_height="56dp"
 	    android:layout_width="fill_parent"
 	    android:orientation="horizontal"
 	    android:gravity="start"
@@ -30,7 +31,9 @@
  			android:layout_marginRight="15dp"
  			android:layout_marginTop="5dp"
  			android:layout_marginBottom="5dp"/>
-	    
 	</LinearLayout>
+	
+
+
 </RelativeLayout>
 	

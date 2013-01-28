@@ -138,8 +138,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     			switch(SELECTED_VIEW)
     			{
     				case SELECT_TOURNAMENT:
+    					intent = new Intent(v.getContext(),TournamentEdit.class);
     					break;
     				case SELECT_TOUR:
+    					intent = new Intent(v.getContext(), TourEdit.class);
     					break;
     				case SELECT_PLAYER:
     					//Send intent to edit player view

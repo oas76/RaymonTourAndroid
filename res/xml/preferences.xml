@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+            android:title="Game Set-up">
+            
+           <ListPreference
+                android:key="mode_preference"
+                android:title="Game Mode"
+                android:entries="@array/mode_entries"
+                android:entryValues="@array/mode_values"
+				android:summary="Chose what kind of golf game you are playing" />
+        
+          <ListPreference
+                android:key="game_preference"
+                android:title="Score Mode"
+                android:entries="@array/game_entries"
+                android:entryValues="@array/game_values"
+                android:summary="Chose what kind of scoring system you are playing" />
+        
+        <CheckBoxPreference
+                android:key="use_handicap"
+                android:title="Handicap Mode"
+                android:summary="Make sure that results are calculated using handicap"
+                android:defaultValue="true" />
+        
+        <CheckBoxPreference
+                android:key="individual_cls3"
+                android:title="Individual Revards"
+                android:summary="If, even in team games, you would like individual prizes for sub-games like longest drive, and closest to pin"
+                android:defaultValue="false" />
+        
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="Stakes Set-up">
+        
+        <EditTextPreference
+            android:key="stakes_tournament"
+            android:title="Stakes Tournament"
+            android:summary="Sum betted by each of the players of this game for the outright win"
+            android:defaultValue="100"/>
+        <EditTextPreference
+            android:key="stakes_longest"
+            android:title="Stakes Longest Drive"
+            android:summary="Sum betted by each of the players of this game for the longest drive at one given hole"
+            android:defaultValue="20"/>
+        <EditTextPreference
+            android:key="stakes_closest"
+            android:title="Stakes Closest to Pin"
+            android:summary="Sum betted by each of the players of this game for the closest to pin at one given hole"
+            android:defaultValue="20"/>
+        <EditTextPreference
+            android:key="stakes_3put"
+            android:title="Stakes 3 Put (Snake)"
+            android:summary="Sum commited by each player to pay every one else given he ends up with the last 3 put"
+            android:defaultValue="20"/>
+        <EditTextPreference
+            android:key="stakes_1put"
+            android:title="Stakes 1 Put (Snake)"
+            android:summary="Sum commited by each player to pay to the player holding the last 1 put"
+            android:defaultValue="20"/>
+        <EditTextPreference
+            android:key="purse"
+            android:title="Tournamnet Purse"
+            android:summary="Amount provided by external sponsors for this tournament"
+            android:defaultValue="0"/>
+    
+    
+    </PreferenceCategory>
+
+</PreferenceScreen>

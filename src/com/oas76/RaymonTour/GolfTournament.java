@@ -7,7 +7,7 @@ import android.graphics.Color;
 
 public class GolfTournament {
 		
-		    // Fundamenta scoring mode
+		// Fundamenta scoring mode
 		static final int STROKE_TOUR = 1;
 		static final int POINTS_TOUR = 2;
 		static final int STROKE_TOUR_MATCH = 3;
