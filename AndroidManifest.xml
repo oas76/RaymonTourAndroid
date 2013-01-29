@@ -23,8 +23,7 @@
         </activity>
         <activity
             android:name="com.oas76.RaymonTour.TournamentEdit"
-            android:label="@string/title_activity_tournament_edit"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:label="@string/title_activity_tournament_edit">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />

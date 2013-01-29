@@ -8,17 +8,6 @@
     	android:layout_height="wrap_content"
     	android:layout_alignParentTop="true"
     	android:orientation="horizontal">
-    	<ImageView android:id="@+id/person_thumb"
-    		android:contentDescription="@string/thumbs_image"
-    		android:src="@drawable/ic_launcher"
-    		android:layout_width="48dp"
-    		android:layout_height="48dp"
-    		android:scaleType="center"
-    		android:layout_gravity="center_vertical"
-    		android:layout_marginRight="15dp"
-        	android:layout_marginTop="15dp"
-        	android:layout_marginBottom="15dp"
-        	android:layout_marginLeft="15dp"/>
    	 	<EditText android:id="@+id/player_full"
     		android:layout_width="fill_parent"
     		android:layout_height="wrap_content" 
@@ -26,9 +15,11 @@
     		android:gravity="center_vertical"
         	android:textSize="16sp"
         	android:layout_marginTop="15dp"
-        	android:layout_marginBottom="5dp"/>
+        	android:layout_marginBottom="5dp"
+        	android:layout_marginLeft="15dp"/>
    	</LinearLayout>
-    <RelativeLayout android:layout_width="fill_parent"
+    <RelativeLayout android:id="@+id/course_and_date" 
+        android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:layout_below="@+id/tournamnet_topp_line" >
   		<Spinner android:id="@+id/course_picker"
@@ -36,7 +27,11 @@
     		android:layout_height="wrap_content"
     		android:layout_toLeftOf="@+id/date_button"
     		android:gravity="start"
-        	android:textSize="12sp"/>
+        	android:textSize="12sp"
+        	android:layout_marginRight="5dp"
+ 			android:layout_marginLeft="15dp"
+ 			android:layout_marginTop="5dp"
+ 			android:layout_marginBottom="5dp"/>
   		<ImageButton android:id="@+id/date_button"
     		android:contentDescription="@string/thumbs_image"
     		android:layout_height="wrap_content"
@@ -44,13 +39,18 @@
     		android:layout_alignParentRight="true"
     		android:src="@drawable/collections_go_to_today"
     		android:clickable="true"
- 			android:layout_marginRight="5dp"
+ 			android:layout_marginRight="15dp"
  			android:layout_marginLeft="5dp"
  			android:layout_marginTop="5dp"
  			android:layout_marginBottom="5dp"/>
   	</RelativeLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    	xmlns:tools="http://schemas.android.com/tools"
+  	<TableLayout android:id="@+id/player_container"
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="fill_parent"
+  	    android:layout_below="@+id/course_and_date"
+  	    android:layout_above="@+id/bottom_bar">
+  	</TableLayout>
+	<LinearLayout android:id="@+id/bottom_bar"
     	android:orientation="horizontal"
     	android:layout_alignParentBottom="true"
     	android:layout_height="wrap_content"

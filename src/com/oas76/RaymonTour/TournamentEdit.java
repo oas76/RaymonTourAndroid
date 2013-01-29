@@ -34,6 +34,9 @@ public class TournamentEdit extends Activity  {
 	int tYear = 0;
 	int tMonth = 0;
 	int tDate = 0;
+	
+	ArrayList<GolfPlayer> mSelectedPlayers = null;
+	boolean[] boolList = new boolean[20];
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +102,7 @@ public class TournamentEdit extends Activity  {
 		verify.setOnClickListener(new OnClickListener() {
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(context,SettingsActivity.class);
-				startActivity(intent);
+				context.finish();
 			}
 			
 		});

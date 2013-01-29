@@ -135,6 +135,12 @@ public class GolfPlayer {
 		
 	}
 	
+	@Override
+	public String toString()
+	{
+		return pNick;
+	}
+	
 	
 	
 
