@@ -50,6 +50,12 @@ public class Tour {
 		tDesc = desc;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return this.getTourName();
+	}
+	
 	
 	
 	

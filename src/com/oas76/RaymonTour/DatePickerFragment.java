@@ -27,6 +27,7 @@ public final class DatePickerFragment extends DialogFragment implements DatePick
 	@Override
 	public void onDateSet(DatePicker view, int year, int month, int day) {
 	        ((TournamentEdit)getActivity()).setDate(year,month,day);
+	        
 	}
 
 }

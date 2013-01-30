@@ -13,21 +13,22 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 
-public final class PlayerPickerFragment extends DialogFragment {
+public final class TourPickerFragment extends DialogFragment {
 
 	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 		
 		ArrayList<CharSequence> list = new ArrayList<CharSequence>();
-		if(((TournamentEdit)getActivity()).mSelectedPlayers == null)
-			((TournamentEdit)getActivity()).mSelectedPlayers = new ArrayList<GolfPlayer>(); 
+		if(((TournamentEdit)getActivity()).mSelectedTour == null)
+			((TournamentEdit)getActivity()).mSelectedTour = new ArrayList<Tour>(); 
 		
-		for(GolfPlayer gp:SectionFragment.playerlist)
+		for(Tour tp:SectionFragment.tourlist)
 		{
-			list.add(gp.getNick());
+			list.add(tp.getTourName());
 			
 		}
 		
@@ -35,20 +36,20 @@ public final class PlayerPickerFragment extends DialogFragment {
 		CharSequence[] charList = list.toArray(new CharSequence[count]);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    builder.setTitle("Select Player")
-	    	   .setMultiChoiceItems(charList,((TournamentEdit)getActivity()).boolList,
+	    builder.setTitle("Select Tour")
+	    	   .setMultiChoiceItems(charList,((TournamentEdit)getActivity()).tboolList,
                       new DialogInterface.OnMultiChoiceClickListener() {
 	    		   		@Override
 	    		   		public void onClick(DialogInterface dialog, int which,
 	    		   				boolean isChecked) {
 	    		   			if (isChecked) {
 	    		   				// If the user checked the item, add it to the selected items
-	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.add(SectionFragment.playerlist.get(which));
-	    		   				((TournamentEdit)getActivity()).boolList[which] = true;
+	    		   				((TournamentEdit)getActivity()).mSelectedTour.add(SectionFragment.tourlist.get(which));
+	    		   				((TournamentEdit)getActivity()).tboolList[which] = true;
 	    		   			} else if (((TournamentEdit)getActivity()).mSelectedPlayers.contains(which)) {
 	    		   				// Else, if the item is already in the array, remove it 
-	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.remove(SectionFragment.playerlist.get(which));
-	    		   				((TournamentEdit)getActivity()).boolList[which] = false;
+	    		   				((TournamentEdit)getActivity()).mSelectedTour.remove(SectionFragment.tourlist.get(which));
+	    		   				((TournamentEdit)getActivity()).tboolList[which] = false;
 	    		   				}
 	    		   			}
 	    	   			})
@@ -56,15 +57,16 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
-	    	                	PlayerFragment fragment = new PlayerFragment();
-	    	                	fragment.setPlayerList(((TournamentEdit)getActivity()).mSelectedPlayers);
-	    	                    getFragmentManager().beginTransaction()
-	    	                            .replace(R.id.player_container, fragment)
-	    	                            .commit();
-	    	                    
-	    	                    if(((TournamentEdit)getActivity()).mSelectedPlayers.size() > 0 )
-	    	                    	((TournamentEdit)getActivity()).bplayer = true;
-	    	                    	
+	    	                	String str = "Part of tours: ";
+	    	                	for(int i = 0; i < ((TournamentEdit)getActivity()).tboolList.length; i++)
+	    	                	{
+	    	                		if(((TournamentEdit)getActivity()).tboolList[i])
+	    	                			str = str + SectionFragment.tourlist.get(i).toString();
+	    	                		
+	    	                	}
+	    	                	Toast.makeText(getActivity(),str,Toast.LENGTH_LONG).show();
+	    	                	if(((TournamentEdit)getActivity()).mSelectedTour.size() > 0)
+	    	                		((TournamentEdit)getActivity()).btour = true;
 	    	                	
 	    	                	dialog.dismiss();
 	    	                }
@@ -72,7 +74,7 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
-	    	                	((TournamentEdit)getActivity()).mSelectedPlayers.clear();
+	    	                	((TournamentEdit)getActivity()).mSelectedTour.clear();
 	    	                	dialog.dismiss();
 	    	                    
 	    	                }

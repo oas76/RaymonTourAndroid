@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -27,8 +28,17 @@ public class TournamentEdit extends Activity  {
 	ImageButton datePicker = null;
 	ImageButton tournamentSettings = null;
 	ImageButton addPlayer = null;
+	ImageButton addCourse = null;
+	ImageButton addTour = null;
 	ImageButton verify = null;
+	EditText name = null;
 	int tournament_id = -1;
+	
+	boolean bdate = false;
+	boolean bcourse = false;
+	boolean btour = false;
+	boolean bplayer = false;
+	boolean bname = false;
 	
 	
 	int tYear = 0;
@@ -36,26 +46,23 @@ public class TournamentEdit extends Activity  {
 	int tDate = 0;
 	
 	ArrayList<GolfPlayer> mSelectedPlayers = null;
-	boolean[] boolList = new boolean[20];
+	boolean[] boolList = new boolean[30];
+	boolean[] tboolList = new boolean[30];
+	GolfCourse gCourse = null;
+	ArrayList<Tour> mSelectedTour = null;
+	
+	int id = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tournament_edit);
 		// Show the Up button in the action bar.
+		// If started with intent with id
+		if(getIntent().getExtras() != null)
+			id = getIntent().getExtras().getInt("id");
 		
-		Spinner spinner = (Spinner) findViewById(R.id.course_picker);
-		ArrayList<CharSequence> ac = new ArrayList<CharSequence>();
-		ac.add("Quinta Da M");
-		ac.add("Gr¿nmo");
-		ac.add("Oslo GK");
-
-		DropDownAdapter adapter = new DropDownAdapter(this,
-		         R.layout.listview_dropdown,ac);
-		// Specify the layout to use when the list of choices appears
-		adapter.setDropDownViewResource(R.layout.listview_dropdown);
-		// Apply the adapter to the spinner
-		spinner.setAdapter(adapter);
+		name = (EditText)findViewById(R.id.tournament_name);
 		
 		datePicker =(ImageButton)findViewById(R.id.date_button);
 		hookupDateButton();
@@ -63,15 +70,24 @@ public class TournamentEdit extends Activity  {
 		tournamentSettings = (ImageButton)findViewById(R.id.tournament_settings);
 		hookupTournamentSettings();
 		
-		addPlayer = (ImageButton)findViewById(R.id.tournament_addplayer);
+		addPlayer = (ImageButton)findViewById(R.id.player_button);
 		hookupAddPlayer();
 		
 		verify = (ImageButton)findViewById(R.id.tournament_verify);
 		hookupVerify();
 		
+		addCourse = (ImageButton)findViewById(R.id.course_button);
+		hookupCourse();
+		
+		addTour = (ImageButton)findViewById(R.id.tour_button);
+		hookupTour();
+		
+		
+		
 		
 
 	}
+	
 
 	private void hookupDateButton(){
 		final Activity context = this;
@@ -102,7 +118,18 @@ public class TournamentEdit extends Activity  {
 		verify.setOnClickListener(new OnClickListener() {
 			public void onClick(View v)
 			{
-				context.finish();
+				// Check input field,if not empty
+				if(!((TournamentEdit)context).name.getText().toString().equals("") )
+				{
+					bname = true;
+					Toast.makeText(context,((TournamentEdit)context).name.getText().toString(),Toast.LENGTH_LONG).show();
+				}
+				
+				if(((TournamentEdit)context).setData())
+					context.finish();
+				else
+					Toast.makeText(context,"All fields must be set before creating a tournament",Toast.LENGTH_LONG).show();
+					
 			}
 			
 		});
@@ -121,11 +148,43 @@ public class TournamentEdit extends Activity  {
 		});
 	}
 	
+	private void hookupCourse(){
+		final Activity context = this;
+		addCourse.setOnClickListener(new OnClickListener() {
+			public void onClick(View v)
+			{
+				DialogFragment newFragment = new CoursePickerFragment();
+			    newFragment.show(getFragmentManager(), "coursePicker");
+
+			}
+			
+		});
+	}
+	
+	private void hookupTour(){
+		final Activity context = this;
+		addTour.setOnClickListener(new OnClickListener() {
+			public void onClick(View v)
+			{
+				DialogFragment newFragment = new TourPickerFragment();
+			    newFragment.show(getFragmentManager(), "tourPicker");
+
+			}
+			
+		});
+	}
 	public void setDate(int year, int month, int date){
 		Toast.makeText(this,"Year:Month:Date" + String.valueOf(year) + ":" + String.valueOf(month) + ":" + String.valueOf(date),Toast.LENGTH_LONG).show();
+		bdate = true;
 		tYear = year;
 		tMonth = month;
 		tDate = date;
+	}
+	
+	public boolean setData()
+	{
+		return 	(bdate && bcourse && btour && bplayer && bname);
+		
 	}
 
  

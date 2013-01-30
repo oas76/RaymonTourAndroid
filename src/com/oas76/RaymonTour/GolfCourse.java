@@ -238,6 +238,12 @@ public class GolfCourse {
 	{
 		return gID;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getCourceName();
+	}
     
     
 }

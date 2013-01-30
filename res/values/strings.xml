@@ -55,10 +55,10 @@
     
     <string-array name="team_indexes">
         <item> </item>
-        <item> A</item>
-		<item> B</item>
-		<item> C</item>
-		<item> D</item>
+        <item> Team A </item>
+		<item> Team B </item>
+		<item> Team C </item>
+		<item> Team D </item>
     </string-array>
  
 </resources>
