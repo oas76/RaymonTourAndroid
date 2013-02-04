@@ -19,14 +19,15 @@ public class GolfPlayerPickerAdapter extends ArrayAdapter<GolfPlayer> {
 
 	    Context context; 
 	    int layoutResourceId;    
-	    ArrayList<GolfPlayer> listdata = null;
 	    PlayerHolder holder = null;
+	    GolfPlayer player = null;
+	    int parent_position = 0;
 	    
-	    public GolfPlayerPickerAdapter(Context context, int layoutResourceId, ArrayList<GolfPlayer> listdata) {
-	        super(context, layoutResourceId, listdata);
+	    public GolfPlayerPickerAdapter(Context context, int layoutResourceId) {
+	        super(context, layoutResourceId, TournamentEdit.mSelectedPlayers);
 	        this.layoutResourceId = layoutResourceId;
 	        this.context = context;
-	        this.listdata = listdata;
+
 	    }
 	    
 
@@ -35,10 +36,12 @@ public class GolfPlayerPickerAdapter extends ArrayAdapter<GolfPlayer> {
 	        View row = convertView;
 	        
 	        
+	        
 	        if(row == null)
 	        {
 	            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 	            row = inflater.inflate(layoutResourceId, parent, false);
+	            parent_position = position;
 	            
 	            holder = new PlayerHolder();
 	            holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
@@ -50,6 +53,7 @@ public class GolfPlayerPickerAdapter extends ArrayAdapter<GolfPlayer> {
 	                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 	                    holder.tIndex = position;
 	                    Toast.makeText((Activity)context, "Selected: " + holder.teamIndex.getItemAtPosition(position).toString(),Toast.LENGTH_LONG).show();
+	                    TournamentEdit.mSelectedPlayers.get(parent_position).setTeamIndex(holder.tIndex);
 	                }
 
 	                @Override
@@ -65,7 +69,7 @@ public class GolfPlayerPickerAdapter extends ArrayAdapter<GolfPlayer> {
 	            holder = (PlayerHolder)row.getTag();
 	        }
 	        
-	        GolfPlayer player = listdata.get(position);
+	        GolfPlayer player = TournamentEdit.mSelectedPlayers.get(position);
 	        holder.txtTitle.setText(player.getNick() + "  "  +  holder.teamIndex.getItemAtPosition(holder.tIndex).toString());
 	        holder.imgIcon.setImageResource(R.drawable.ic_launcher);
 	        

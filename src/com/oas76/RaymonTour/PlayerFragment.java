@@ -17,6 +17,7 @@ public class PlayerFragment extends ListFragment {
 	ArrayList<GolfPlayer> playerList = null;
 	Activity myActivity = null;
 	
+	
 	public void setPlayerList(ArrayList<GolfPlayer> players)
 	{
 		playerList = players;
@@ -35,8 +36,9 @@ public class PlayerFragment extends ListFragment {
 	            Bundle savedInstanceState) {
 		
 		ListView lview = new ListView(getActivity());
-		ArrayAdapter<GolfPlayer> ap = new GolfPlayerPickerAdapter(myActivity, R.layout.listview_playerpicker_row, playerList);
+		ArrayAdapter<GolfPlayer> ap = new GolfPlayerPickerAdapter(myActivity, R.layout.listview_playerpicker_row);
 		lview.setAdapter(ap);
+
 		
 		return lview;
 		

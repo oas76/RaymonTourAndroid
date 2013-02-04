@@ -54,6 +54,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     
     private static ImageButton addButton = null;
+    
     private static int SELECTED_VIEW = 1;
     
     private static final int SELECT_TOURNAMENT = 1;
@@ -97,6 +98,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
             getActionBar().setSelectedNavigationItem(
                     savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
+            SELECTED_VIEW = savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM) + 1;
         }
     }
 
@@ -153,12 +155,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     			
     			}
     			if(intent != null)
-    	    		startActivity(intent);
+    	    		startActivityForResult(intent, 1);
     	    	else
-    	    		Toast.makeText(v.getContext(),"TBD",Toast.LENGTH_LONG).show();
+    	    		Toast.makeText(v.getContext(),"Downloading course xml...",Toast.LENGTH_LONG).show();
     		}
     	});
     }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	// Ignore results. Just redraw fragments
+    	ListFragment fragment = new SectionFragment();
+        Bundle args = new Bundle();
+        args.putInt(SectionFragment.ARG_SECTION_NUMBER, SELECTED_VIEW);
+        fragment.setArguments(args);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }//onAcrivityResult
     
     
     private class XmlGetter extends AsyncTask<String,Void,String>{
@@ -171,6 +185,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 				try{
 					ArrayList<GolfCourse> gc = CourceXMLFeed.parse(is);
 					updateDb(gc);
+					
 				}
 				catch(Exception e){
 					e.printStackTrace();
@@ -180,7 +195,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 
 	      @Override
 	      protected void onPostExecute(String result) { 
-	    	  Toast.makeText(getBaseContext(),line,Toast.LENGTH_LONG).show();
+	    	  //Toast.makeText(getBaseContext(),line,Toast.LENGTH_LONG).show();
+	    	  // Ignore results. Just redraw fragments
+	    	  ListFragment fragment = new SectionFragment();
+	          Bundle args = new Bundle();
+	          args.putInt(SectionFragment.ARG_SECTION_NUMBER, SELECTED_VIEW);
+	          fragment.setArguments(args);
+	          getFragmentManager().beginTransaction()
+	                  .replace(R.id.container, fragment)
+	                  .commit();
 	      }
 
 	      @Override
@@ -189,6 +212,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 
 	      @Override
 	      protected void onProgressUpdate(Void... values) {
+	    	  Toast.makeText(getBaseContext(),"Downloading...",Toast.LENGTH_LONG).show();
 	      }
 	      
 	  	

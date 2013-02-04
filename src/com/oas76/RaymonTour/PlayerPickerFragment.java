@@ -57,7 +57,6 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
 	    	                	PlayerFragment fragment = new PlayerFragment();
-	    	                	fragment.setPlayerList(((TournamentEdit)getActivity()).mSelectedPlayers);
 	    	                    getFragmentManager().beginTransaction()
 	    	                            .replace(R.id.player_container, fragment)
 	    	                            .commit();

@@ -91,7 +91,8 @@ public class TourEdit extends Activity {
 					{
 						cr.insert(TourContentProvider.CONTENT_URI_TOURS, values);
 					}
-					context.onBackPressed();
+					setResult(RESULT_OK);
+					finish();
 	
 				}
 				

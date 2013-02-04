@@ -16,6 +16,8 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	    Context context; 
 	    int layoutResourceId;    
 	    ArrayList<GolfTournament> data = null;
+	    static final int START_ROW = 1;
+	    static final int DATA_ROW = 2;
 	    
 	    public GolfTournamentAdapter(Context context, int layoutResourceId, ArrayList<GolfTournament> data) {
 	        super(context, layoutResourceId, data);
@@ -28,6 +30,7 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	    public View getView(int position, View convertView, ViewGroup parent) {
 	        View row = convertView;
 	        TournamentHolder holder = null;
+	        // Specific handeling if no data
 	        
 	        if(row == null)
 	        {
@@ -37,6 +40,7 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	            holder = new TournamentHolder();
 	            holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
 	            holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
+	            holder.rowtype = DATA_ROW;
 	            
 	            row.setTag(holder);
 	        }
@@ -51,10 +55,15 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	        
 	        return row;
 	    }
-	    
+	        
 	    static class TournamentHolder
 	    {
 	        ImageView imgIcon;
 	        TextView txtTitle;
+	        int rowtype;
 	    }
-	}
+
+}
+
+	
+

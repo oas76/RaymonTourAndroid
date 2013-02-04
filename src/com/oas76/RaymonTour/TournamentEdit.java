@@ -1,15 +1,20 @@
 package com.oas76.RaymonTour;
 
+import java.sql.SQLXML;
 import java.util.ArrayList;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +28,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 
-public class TournamentEdit extends Activity  {
+public class TournamentEdit extends Activity implements OnSharedPreferenceChangeListener   {
 	
 	ImageButton datePicker = null;
 	ImageButton tournamentSettings = null;
@@ -45,7 +50,7 @@ public class TournamentEdit extends Activity  {
 	int tMonth = 0;
 	int tDate = 0;
 	
-	ArrayList<GolfPlayer> mSelectedPlayers = null;
+	static ArrayList<GolfPlayer> mSelectedPlayers = null;
 	boolean[] boolList = new boolean[30];
 	boolean[] tboolList = new boolean[30];
 	GolfCourse gCourse = null;
@@ -126,7 +131,12 @@ public class TournamentEdit extends Activity  {
 				}
 				
 				if(((TournamentEdit)context).setData())
-					context.finish();
+				{
+					mSelectedPlayers.clear();
+					mSelectedTour.clear();
+					setResult(RESULT_OK);
+					finish();
+				}
 				else
 					Toast.makeText(context,"All fields must be set before creating a tournament",Toast.LENGTH_LONG).show();
 					
@@ -183,7 +193,116 @@ public class TournamentEdit extends Activity  {
 	
 	public boolean setData()
 	{
-		return 	(bdate && bcourse && btour && bplayer && bname);
+		if(bdate && bcourse && btour && bplayer && bname)
+		{
+	        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+	        ContentValues values = new ContentValues();
+			ContentResolver cr = getContentResolver();
+			
+			values.put(TourContentProvider.KEY_GOLF_MODE, Integer.parseInt(prefs.getString("mode_preference","1")));
+			values.put(TourContentProvider.KEY_GOLF_GAME, Integer.parseInt(prefs.getString("game_preference","1")));		
+			values.put(TourContentProvider.KEY_HANDICAPED, prefs.getBoolean("use_handicap",true));
+			values.put(TourContentProvider.KEY_INDIVIDUAL_CLS3, prefs.getBoolean("individual_cls3", false));
+			values.put(TourContentProvider.KEY_STAKES_1PUT, Integer.parseInt(prefs.getString("stakes_1put", "20")));
+			values.put(TourContentProvider.KEY_STAKES_CLOSEST, Integer.parseInt(prefs.getString("stakes_closest", "20")));
+			values.put(TourContentProvider.KEY_STAKES_LONGEST, Integer.parseInt(prefs.getString("stakes_longest", "20")));
+			values.put(TourContentProvider.KEY_STAKES_SNAKE, Integer.parseInt(prefs.getString("stakes_3put", "20")));
+			values.put(TourContentProvider.KEY_STAKES, Integer.parseInt(prefs.getString("stakes_tournament", "100")));
+			values.put(TourContentProvider.KEY_TOURNAMENT_SPONSOR_PURSE, Integer.parseInt(prefs.getString("purse", "0")));
+			values.put(TourContentProvider.KEY_TOURNAMENT_IMGURL, "");
+			values.put(TourContentProvider.KEY_TOURNAMENT_NAME, name.getText().toString());
+			values.put(TourContentProvider.KEY_COURSE_ID, gCourse.getCourceID());
+			values.put(TourContentProvider.KEY_TOURNAMENT_DATE, String.valueOf(tYear) + "-" + String.valueOf(tMonth+1) + "-" + String.valueOf(tDate));
+			
+			
+			Uri new_entry_uri= cr.insert(TourContentProvider.CONTENT_URI_TOURNAMENTS, values);
+			String rowID = new_entry_uri.getPathSegments().get(1);
+			
+			//cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS,Integer.toString(id)), values, null, null);
+			Cursor res = null;
+			int index = -1;
+			int scoreId = -1;
+			
+			cr = getContentResolver();
+			for(GolfPlayer gp:mSelectedPlayers)
+			{
+
+				for(int i = 1; i <= 18; i++)
+				{
+					values = new ContentValues();
+					res = null;
+					values.put(TourContentProvider.KEY_PLAYER_ID, gp.getPlayerID());
+					values.put(TourContentProvider.KEY_TEAM_ID, gp.getTeamIndex());
+					values.put(TourContentProvider.KEY_TOURNAMENT_ID,rowID);
+					values.put(TourContentProvider.KEY_COURSE_ID, gCourse.getCourceID());
+					values.put(TourContentProvider.KEY_HOLE_NR, i);
+				
+					res = cr.query(TourContentProvider.CONTENT_URI_SCORES, 
+						 new String[]{TourContentProvider.KEY_ID}, 
+						 TourContentProvider.KEY_PLAYER_ID + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_HOLE_NR + "=?",
+						 new String[]{ String.valueOf(gp.getPlayerID()) , String.valueOf(rowID), String.valueOf(i) },
+						 null);
+					boolean updateEntry=(res != null ? true : false );
+					if(updateEntry)
+					{
+						res.moveToFirst();
+						index = res.getColumnIndex(TourContentProvider.KEY_ID);
+						scoreId = res.getInt(index);
+						cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_SCORES,String.valueOf(scoreId)), values, null, null);
+					}
+					else
+					{
+						values.put(TourContentProvider.KEY_GOLF_SCORE,-1);
+						cr.insert(TourContentProvider.CONTENT_URI_SCORES, values);
+						
+					}
+				}
+			}
+			
+			cr = getContentResolver();
+			for(Tour tt : mSelectedTour)
+			{
+				values = new ContentValues();
+				res = null;
+				values.put(TourContentProvider.KEY_TOUR_ID, tt.getTourID());
+				values.put(TourContentProvider.KEY_TOURNAMENT_ID, rowID);
+				res = cr.query(TourContentProvider.CONTENT_URI_TT, 
+						 new String[]{TourContentProvider.KEY_ID}, 
+						 TourContentProvider.KEY_TOUR_ID + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=?",
+						 new String[]{ String.valueOf(tt.getTourID()) , String.valueOf(rowID) },
+						 null);
+				
+				boolean updateEntry=(res != null ? true : false );
+				if(updateEntry)
+				{
+					res.moveToFirst();
+					index = res.getColumnIndex(TourContentProvider.KEY_ID);
+					scoreId = res.getInt(index);
+					cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TT,String.valueOf(scoreId)), values, null, null);
+				}
+				else
+				{
+					cr.insert(TourContentProvider.CONTENT_URI_TT, values);					
+				}
+	
+			}
+
+			        
+	        return true;
+	     
+	      
+		}
+		else
+			return false;
+		
+		
+		
+	}
+
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
+		// No changes 
 		
 	}
 

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -125,7 +126,8 @@ public class PlayerEdit extends Activity  {
 					{
 						cr.insert(TourContentProvider.CONTENT_URI_PLAYERS, values);
 					}
-					context.onBackPressed();
+					setResult(RESULT_OK); 
+					finish();
 	
 				}
 				
