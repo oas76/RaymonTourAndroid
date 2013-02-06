@@ -73,9 +73,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			EDIT_ACTIVITY = "Tournament";
     			GolfTournament tournemanet = (GolfTournament)l.getItemAtPosition(pos);
     			int tournament_id = tournemanet.getTournamentID();
-    			// Add register score functionality here....
-    			//intent = new Intent(myActivity, TournamentEdit.class);
-    			//intent.putExtra("id", tournament_id);
+    			//Add register score functionality here....
+    			intent = new Intent(myActivity, ScoreEdit.class);
+    			intent.putExtra("id", tournament_id);
     			break;
     		case 2:
     			EDIT_ACTIVITY = "Tour";

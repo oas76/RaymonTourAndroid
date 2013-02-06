@@ -18,47 +18,66 @@
     <string name="title_activity_player_view">PlayerView</string>
     <string name="title_activity_edit_course">EditCourse</string>
     <string name="title_activity_tour_edit">TourEdit</string>
-    
+
     <string-array name="mode_entries">
         <item>Stroke</item>
-		<item >Points</item>
-		<item >Stroke Match</item>
-		<item >Points Match</item>
+        <item>Points</item>
+        <item>Stroke Match</item>
+        <item>Points Match</item>
     </string-array>
-    
     <string-array name="mode_values">
         <item>1</item>
-		<item >2</item>
-		<item >3</item>
-		<item >4</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
-    
     <string-array name="game_entries">
         <item>Individual</item>
-		<item >Best Ball</item>
-		<item >Four Some</item>
-		<item >Green Some</item>
-		<item >Blood Some</item>
-		<item >Texas Scramble</item>
-	    <item >Københavner</item>
+        <item>Best Ball</item>
+        <item>Four Some</item>
+        <item>Green Some</item>
+        <item>Blood Some</item>
+        <item>Texas Scramble</item>
+        <item>Københavner</item>
     </string-array>
-    
     <string-array name="game_values">
         <item>1</item>
-		<item >2</item>
-		<item >3</item>
-		<item >4</item>
-		<item >5</item>
-		<item >6</item>
-		<item >7</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <string-array name="team_indexes">
+        <item></item>
+        <item> Team A </item>
+        <item> Team B </item>
+        <item> Team C </item>
+        <item> Team D </item>
     </string-array>
     
-    <string-array name="team_indexes">
-        <item> </item>
-        <item> Team A </item>
-		<item> Team B </item>
-		<item> Team C </item>
-		<item> Team D </item>
+    <string-array name="score_holes">
+        <item> Hole 1 </item>
+        <item> Hole 2 </item>
+        <item> Hole 3 </item>
+        <item> Hole 4 </item>
+        <item> Hole 5 </item>
+        <item> Hole 6 </item>
+        <item> Hole 7 </item>
+        <item> Hole 8 </item>
+        <item> Hole 9 </item>
+        <item> Hole 10 </item>
+        <item> Hole 11 </item>
+        <item> Hole 12 </item>
+        <item> Hole 13 </item>
+        <item> Hole 14 </item>
+        <item> Hole 15 </item>
+        <item> Hole 16 </item>
+        <item> Hole 17 </item>
+        <item> Hole 18 </item>
     </string-array>
- 
+
+    <string name="title_activity_score_edit">ScoreEdit</string>
+
 </resources>

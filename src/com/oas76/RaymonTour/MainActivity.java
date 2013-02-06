@@ -21,6 +21,8 @@ import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -226,10 +228,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 	  		            line = EntityUtils.toString(httpEntity);
 	  		        } catch (UnsupportedEncodingException e) {
 	  		            line = "<results status=\"error\"><msg>Can't connect to server</msg></results>";
+	  		            Toast.makeText(getBaseContext(),line,Toast.LENGTH_LONG).show();
 	  		        } catch (MalformedURLException e) {
 	  		            line = "<results status=\"error\"><msg>Can't connect to server</msg></results>";
+	  		            Toast.makeText(getBaseContext(),line,Toast.LENGTH_LONG).show();
 	  		        } catch (IOException e) {
 	  		            line = "<results status=\"error\"><msg>Can't connect to server</msg></results>";
+	  		            Toast.makeText(getBaseContext(),line,Toast.LENGTH_LONG).show();
 	  		        }
 	  		        return line;
 	  		}
@@ -304,6 +309,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 	  	  } // updatedb
 	
 	} // private async class
+    
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+    
 } // MainActivity
     
 

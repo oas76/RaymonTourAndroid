@@ -18,15 +18,6 @@ public class GolfPlayerAdapter extends ArrayAdapter<GolfPlayer> {
 	    GolfPlayer data[] = null;
 	    ArrayList<GolfPlayer> listdata = null;
 	    
-	    /* Deprecated
-	    public GolfPlayerAdapter(Context context, int layoutResourceId, GolfPlayer[] data) {
-	        super(context, layoutResourceId, data);
-	        this.layoutResourceId = layoutResourceId;
-	        this.context = context;
-	        this.data = data;
-	    }
-	    */
-	    
 	    public GolfPlayerAdapter(Context context, int layoutResourceId, ArrayList<GolfPlayer> listdata) {
 	        super(context, layoutResourceId, listdata);
 	        this.layoutResourceId = layoutResourceId;

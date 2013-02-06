@@ -8,36 +8,55 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/raymon_start_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.oas76.RaymonTour.MainActivity"
-            android:label="@string/app_name" >
+            android:name="com.oas76.RaymonTour.TourSplash"
+            android:configChanges="orientation"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name="com.oas76.RaymonTour.MainActivity"
+            android:configChanges="orientation"
+            android:label="main menu"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.oas76.RaymonTour.TournamentEdit"
-            android:label="@string/title_activity_tournament_edit">
+            android:configChanges="orientation"
+            android:label="@string/title_activity_tournament_edit"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
         <activity
             android:name="com.oas76.RaymonTour.SettingsActivity"
-            android:label="Settings" >
+            android:configChanges="orientation"
+            android:label="Settings"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
         <activity
             android:name="com.oas76.RaymonTour.PlayerEdit"
+            android:configChanges="orientation"
             android:label="@string/title_activity_player_edit"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -52,14 +71,21 @@
 
         <activity
             android:name="com.oas76.RaymonTour.TourEdit"
+            android:configChanges="orientation"
             android:label="@string/title_activity_tour_edit"
-            android:theme="@android:style/Theme.Holo.Dialog"  >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.Dialog" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.oas76.RaymonTour.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.oas76.RaymonTour.ScoreEdit"
+            android:label="@string/title_activity_score_edit" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

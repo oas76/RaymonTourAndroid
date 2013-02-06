@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -104,7 +106,7 @@ public class PlayerEdit extends Activity  {
 				String nic = ((EditText)findViewById(R.id.player_nic)).getText().toString();
 				String name = ((EditText)findViewById(R.id.player_full)).getText().toString();
 				String hc =  ((EditText)findViewById(R.id.player_hc)).getText().toString();
-				double dhc = 36.0;
+				double dhc = Double.parseDouble(hc);
 				if(nic.equals("") || name.equals("") || hc.equals(""))
 				{
 					Toast.makeText(v.getContext(),"All entries must be edited",Toast.LENGTH_LONG).show();
@@ -135,5 +137,12 @@ public class PlayerEdit extends Activity  {
 			
 		});
 	}
+	
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
 
 }
