@@ -30,6 +30,12 @@
                 android:summary="If, even in team games, you would like individual prizes for sub-games like longest drive, and closest to pin"
                 android:defaultValue="false" />
         
+        <CheckBoxPreference
+                android:key="cap_score"
+                android:title="Cap on stroke games"
+                android:summary="Do you want to have a max limit of Par + 5 for all stroke games, or do you want to play untill the fat lady sings"
+                android:defaultValue="true" />
+        
 
     </PreferenceCategory>
 

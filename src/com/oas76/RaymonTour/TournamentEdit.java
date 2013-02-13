@@ -99,8 +99,9 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_tournament_edit, menu);
-		return true;
+		//getMenuInflater().inflate(R.menu.action_menu,menu);
+		return super.onCreateOptionsMenu(menu);
+		
 	}
 
 	@Override
@@ -240,6 +241,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 			values.put(TourContentProvider.KEY_TOURNAMENT_NAME, name.getText().toString());
 			values.put(TourContentProvider.KEY_COURSE_ID, gCourse.getCourceID());
 			values.put(TourContentProvider.KEY_TOURNAMENT_DATE, String.valueOf(tYear) + "-" + String.valueOf(tMonth+1) + "-" + String.valueOf(tDate));
+			values.put(TourContentProvider.KEY_CAPPED_STROKE, prefs.getBoolean("cap_score",true));
 			
 			
 			Uri new_entry_uri= cr.insert(TourContentProvider.CONTENT_URI_TOURNAMENTS, values);
@@ -279,7 +281,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 					}
 					else
 					{
-						values.put(TourContentProvider.KEY_GOLF_SCORE,-1);
+						values.put(TourContentProvider.KEY_GOLF_SCORE,0);
 						cr.insert(TourContentProvider.CONTENT_URI_SCORES, values);
 						
 					}

@@ -36,41 +36,108 @@ public class ScoreInputFragment extends ListFragment {
 		int tId = getArguments().getInt(TOURNAMENT_ID);
 		int pId = -1;
 		int pId_index = -1;
-		int cId = -1;
-		int cId_index = -1;
-		ArrayList<String> playerList = new ArrayList<String>();
-		Cursor cur2 = null;
+		ArrayList<GolfTeam> playerList = new ArrayList<GolfTeam>();
+		ArrayList<GolfPlayer> tmpList = null;
+		int layoutId = 0;
 		
 		ContentResolver cr = myActivity.getContentResolver();
+		
 		Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES, 
 							  null, 
-							  TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_HOLE_NR + "=?", 
-							  new String[]{String.valueOf(tId),String.valueOf(holeNr)},
+							  TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_HOLE_NR + "=? AND " + TourContentProvider.KEY_TEAM_ID + "=?", 
+							  new String[]{String.valueOf(tId),String.valueOf(holeNr), "0"},
 							  null);
 		if(cur != null)
 		{
+			// This is an individual game. ( If not all have team, then individual ) 
+			playerList.clear();
 			while(cur.moveToNext())
 			{
 				pId_index = cur.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_ID);
 				pId = cur.getInt(pId_index);
-				cId_index = cur.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID);
-				cId = cur.getInt(cId_index);
-				playerList.add(String.valueOf(pId));
+				tmpList = new ArrayList<GolfPlayer>();
+				tmpList.add(((RaymonTour)myActivity.getApplicationContext()).getPlayerbyIndex(pId));
+				playerList.add(new GolfTeam(tmpList));
+			}
+		}
+		
+		else
+		{
+			// Assume 4 teams.. Create GolfTeams for each of them
+			playerList.clear();
+			for(int i = 1; i<=4; i++)
+			{
+				if(this.getPlayersByTeamIndex(i,tId).size() > 0)
+					playerList.add(new GolfTeam(this.getPlayersByTeamIndex(i,tId)));
 				
 			}
 		}
 		
+		GolfTournament gt = ((RaymonTour)myActivity.getApplicationContext()).getTournamentbyIndex(tId);
+		// Evaluate Game&Mode to set correct score lists
+		switch(gt.getTournamentGame())
+		{
+			case GolfTournament.INDIVIDUAL:
+			case GolfTournament.BEST_BALL:
+			case GolfTournament.FOUR_SOME:
+			case GolfTournament.GREEN_SOME:
+			case GolfTournament.BLOOD_SOME:
+			case GolfTournament.SCRAMBLE:
+			break;
+		}
+		
+		switch(gt.getTournamentMode())
+		{
+			case GolfTournament.POINTS_TOUR:
+			case GolfTournament.STROKE_TOUR:
+				layoutId = R.layout.listview_scoreedit_row;
+				break;
+			case GolfTournament.POINTS_TOUR_MATCH:
+			case GolfTournament.STROKE_TOUR_MATCH:
+				layoutId = R.layout.listview_matchedit_view;
+				break;
+			default:
+				layoutId = R.layout.listview_scoreedit_row;
+		}
+		
+
+		
 		Bundle args = new Bundle();
         args.putInt("TournamentId", tId);
-        args.putInt("CourseId",cId);
         args.putInt("HoleId", holeNr);
 		
 		ListView lview = new ListView(getActivity());
-		ArrayAdapter<String> ap = new ScoreEditAdapter(myActivity,R.layout.listview_scoreedit_row,playerList,args);
+		ArrayAdapter<GolfTeam> ap = new ScoreEditAdapter(myActivity,layoutId,playerList,args);
 		lview.setAdapter(ap);
 
 		
 		return lview;
 
 	}
+	
+	
+    private ArrayList<GolfPlayer> getPlayersByTeamIndex(int index, int tournament_id)
+    {
+    	ArrayList<GolfPlayer> res = new ArrayList<GolfPlayer>();
+    	ContentResolver cr = myActivity.getContentResolver();
+        Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES,
+        				null,
+        				TourContentProvider.KEY_HOLE_NR + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_TEAM_ID + "=?",
+        				new String[]{"1", String.valueOf(tournament_id), String.valueOf(index)},
+        				null);
+        if(cur != null)
+        {
+        	// Correct score entry found
+        	res.clear();
+        	while(cur.moveToNext())
+        	{
+        		int player_index = cur.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_ID);
+        		int player_id = cur.getInt(player_index);
+        		res.add(((RaymonTour)myActivity.getApplicationContext()).getPlayerbyIndex(player_id));
+        	}
+            	
+        }
+        return res;
+    }
+	
 }

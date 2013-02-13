@@ -3,6 +3,7 @@ package com.oas76.RaymonTour;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +43,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     private static String EDIT_ACTIVITY = "Tournamnet";
     private static Activity myActivity = null;
     
-	static ArrayList<GolfPlayer> playerlist = null; /*new ArrayList<GolfPlayer>();*/
 	ArrayAdapter<GolfPlayer> ap = null;
-	static ArrayList<GolfCourse> courselist = null; /*new ArrayList<GolfCourse>();*/
 	ArrayAdapter<GolfCourse> ac = null;
-	static ArrayList<GolfTournament> tournamentlist = null; /*new ArrayList<GolfTournament>();*/
 	ArrayAdapter<GolfTournament> at = null;
-	static ArrayList<Tour> tourlist = null; /*new ArrayList<Tour>();*/
 	ArrayAdapter<Tour> atour = null;
 
 	
@@ -117,33 +114,37 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	Tour gTour = new Tour(0);
     	gTour.setTourName("Press «+« to add a new tour to your app");
     	
-    	if(playerlist == null )
+    	if(((RaymonTour)myActivity.getApplication()).getPlayerlist().size() == 0 )
     	{
-    		playerlist = new ArrayList<GolfPlayer>();
-    		playerlist.add(gp);
+    		((RaymonTour)myActivity.getApplication()).getPlayerlist().add(gp);
     	}
-    	if(courselist == null)
+    	if(((RaymonTour)myActivity.getApplication()).getCourselist().size() == 0)
     	{
-    		courselist = new ArrayList<GolfCourse>();
-    		courselist.add(gc);
+    		((RaymonTour)myActivity.getApplication()).getCourselist().add(gc);
     	}
-    	if(tournamentlist == null)
+    	if(((RaymonTour)myActivity.getApplication()).getTournamnetlist().size() == 0)
     	{
-    		tournamentlist = new ArrayList<GolfTournament>();
-    		tournamentlist.add(gt);
+    		((RaymonTour)myActivity.getApplication()).getTournamnetlist().add(gt);
     	}
-    	if(tourlist == null)
+    	if(((RaymonTour)myActivity.getApplication()).getTourlist().size() == 0)
     	{
-    		tourlist = new ArrayList<Tour>();
-    		tourlist.add(gTour);
+    		((RaymonTour)myActivity.getApplication()).getTourlist().add(gTour);
     	}
     	
     	// Create initial placeholder objects
     	
-    	at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
-    	ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
-    	ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
-    	atour = new GolfTourAdapter(listView.getContext(), R.layout.listview_course_row, tourlist);
+    	at = new GolfTournamentAdapter(listView.getContext(),
+    									R.layout.listview_tournament_row, 
+    									((RaymonTour)myActivity.getApplication()).getTournamnetlist());
+    	ac = new GolfCourseAdapter(listView.getContext(), 
+    								R.layout.listview_course_row, 
+    								((RaymonTour)myActivity.getApplication()).getCourselist());
+    	ap = new GolfPlayerAdapter(listView.getContext(), 
+    								R.layout.listview_course_row, 
+    								((RaymonTour)myActivity.getApplication()).getPlayerlist());
+    	atour = new GolfTourAdapter(listView.getContext(), 
+    								R.layout.listview_course_row, 
+    								((RaymonTour)myActivity.getApplication()).getTourlist());
     	
     	
     	switch(getArguments().getInt(ARG_SECTION_NUMBER))
@@ -242,6 +243,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 		
 		return loader;
 	}
+    
+   
+    
 	
 
 
@@ -262,7 +266,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					if(ap != null)
 						ap.clear();
 					else
-						playerlist.clear();
+						((RaymonTour)myActivity.getApplication()).getPlayerlist().clear();
 				
 					while(cursor.moveToNext())
 					{
@@ -279,7 +283,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						}
 						else
 						{
-							playerlist.add(newPlayer);
+							((RaymonTour)myActivity.getApplication()).getPlayerlist().add(newPlayer);
 						}
 					}
 					break;
@@ -296,7 +300,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					if(ac != null)
 						ac.clear();
 					else
-						courselist.clear();
+						((RaymonTour)myActivity.getApplication()).getCourselist().clear();
 				
 					while(cursor.moveToNext())
 					{
@@ -316,10 +320,46 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						}
 						else
 						{
-							courselist.add(newCourse);
+							((RaymonTour)myActivity.getApplication()).getCourselist().add(newCourse);
+						}
+					
+					
+					}
+					cursor.close();
+					cursor = myActivity.getContentResolver().query(TourContentProvider.CONTENT_URI_HOLES, null, null, null, null);
+					// Never break course update. Make sure that hole info is added ASAP.;
+				case HOLE_LOADER_ID:
+					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+					name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_NAME);
+					int nr_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_NR);
+					length_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_LENGTH);
+					int index_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_INDEX );
+					par_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_PAR);
+					int course_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID);
+					
+					int i =0;
+					while(cursor.moveToNext())
+					{
+						int hole_nr = cursor.getInt(nr_index);
+						i=0;
+						for(GolfCourse gc : ((RaymonTour)myActivity.getApplication()).getCourselist())
+						{
+							if(gc.getCourceID() == cursor.getInt(course_index))
+							{
+								gc.setHoleName(hole_nr, cursor.getString(name_index));
+								gc.setHoleIndex(hole_nr, cursor.getInt(index_index));
+								gc.setHoleLength(hole_nr, cursor.getInt(length_index));
+								gc.setHolePar(hole_nr, cursor.getInt(par_index));
+								((RaymonTour)myActivity.getApplication()).getCourselist().set(i, gc);
+							}
+							i++;
 						}
 					}
+					
 					break;
+
+
+					
 				case TOURNAMENT_LOADER_ID:
 					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
 					name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_NAME);
@@ -333,14 +373,15 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					int stakes_3put_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_SNAKE);
 					int stakes_1put_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_1PUT);
 					int date_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_DATE);
-					int course_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID);
+					course_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID);
+					int cstroke_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_CAPPED_STROKE);
 					
 					//int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY....);
 				
 					if(at != null)
 						at.clear();
 					else
-						tournamentlist.clear();
+						((RaymonTour)myActivity.getApplication()).getTournamnetlist().clear();
 				
 					while(cursor.moveToNext())
 					{
@@ -356,6 +397,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 												cursor.getInt(stakes_longest_index),
 												cursor.getInt(stakes_3put_index), 
 												cursor.getInt(stakes_1put_index));
+						newTournament.setTournamentDate(Date.valueOf(cursor.getString(date_index)));
+						newTournament.setCappedStroke(cursor.getInt(cstroke_index));
+						
 
 					
 						if(at != null)
@@ -365,7 +409,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						}
 						else
 						{
-							tournamentlist.add(newTournament);
+							((RaymonTour)myActivity.getApplication()).getTournamnetlist().add(newTournament);
 						}
 					}
 					break;
@@ -378,7 +422,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					if(atour != null)
 						atour.clear();
 					else
-						tourlist.clear();
+						((RaymonTour)myActivity.getApplication()).getTourlist().clear();
 		
 					while(cursor.moveToNext())
 					{
@@ -394,7 +438,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						}
 						else
 						{
-							tourlist.add(newTour);
+							((RaymonTour)myActivity.getApplication()).getTourlist().add(newTour);
 						}
 					}
 					break;

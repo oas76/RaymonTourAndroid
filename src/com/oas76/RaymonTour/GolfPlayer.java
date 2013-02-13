@@ -13,6 +13,7 @@ public class GolfPlayer {
 	private int pWinnings=0;
 	private int[][] pScore = null;
 	private int pTeamIndex = 0;
+	private int temp_stroke = 0;
 
 	
 	public GolfPlayer(int id) {
@@ -139,6 +140,14 @@ public class GolfPlayer {
 	public String toString()
 	{
 		return pNick;
+	}
+
+	public int getTemp_stroke() {
+		return temp_stroke;
+	}
+
+	public void setTemp_stroke(int temp_stroke) {
+		this.temp_stroke = temp_stroke;
 	}
 	
 	

@@ -25,7 +25,7 @@ public final class PlayerPickerFragment extends DialogFragment {
 		if(((TournamentEdit)getActivity()).mSelectedPlayers == null)
 			((TournamentEdit)getActivity()).mSelectedPlayers = new ArrayList<GolfPlayer>(); 
 		
-		for(GolfPlayer gp:SectionFragment.playerlist)
+		for(GolfPlayer gp : ((RaymonTour)getActivity().getApplication()).getPlayerlist())
 		{
 			list.add(gp.getNick());
 			
@@ -43,11 +43,12 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    		   				boolean isChecked) {
 	    		   			if (isChecked) {
 	    		   				// If the user checked the item, add it to the selected items
-	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.add(SectionFragment.playerlist.get(which));
+	    		   				ArrayList<GolfPlayer> playerlist = (((RaymonTour)getActivity().getApplication()).getPlayerlist());
+	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.add( playerlist.get(which) );
 	    		   				((TournamentEdit)getActivity()).boolList[which] = true;
 	    		   			} else if (((TournamentEdit)getActivity()).mSelectedPlayers.contains(which)) {
 	    		   				// Else, if the item is already in the array, remove it 
-	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.remove(SectionFragment.playerlist.get(which));
+	    		   				((TournamentEdit)getActivity()).mSelectedPlayers.remove(((RaymonTour)getActivity().getApplication()).getPlayerlist().get(which));
 	    		   				((TournamentEdit)getActivity()).boolList[which] = false;
 	    		   				}
 	    		   			}

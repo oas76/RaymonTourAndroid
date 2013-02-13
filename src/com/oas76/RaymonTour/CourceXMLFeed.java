@@ -114,7 +114,10 @@ public final class CourceXMLFeed  {
         	holeindex[holenumber-1] = Integer.parseInt(parser.getAttributeValue(null, "index"));
         	holepar[holenumber-1] = Integer.parseInt(parser.getAttributeValue(null, "par"));
         	holelength[holenumber-1] = Integer.parseInt(parser.getAttributeValue(null, "length"));
-        	holename.add(parser.getAttributeValue(null, "name"));
+        	if(holename.size() < holenumber)
+        		holename.add(parser.getAttributeValue(null, "name"));
+        	else
+        		holename.set(holenumber-1, parser.getAttributeValue(null, "name"));
         }
        
 	}

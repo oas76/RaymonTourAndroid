@@ -71,13 +71,13 @@ public class PlayerEdit extends Activity  {
 		hookupButton();
 	}
 
-	/*@Override
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_player_edit, menu);
-		return true;
+		getMenuInflater().inflate(R.menu.action_menu,menu);
+		return super.onCreateOptionsMenu(menu);
 	}
-	*/
+	
 
 	/*
 	@Override

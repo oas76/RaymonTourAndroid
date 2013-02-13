@@ -5,6 +5,7 @@
 package com.oas76.RaymonTour;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -123,6 +124,7 @@ public class TourContentProvider extends ContentProvider {
   static final String KEY_TOURNAMENT_SPONSOR_PURSE = "TournamentSponsorPurse";
   static final String KEY_TOURNAMENT_NAME = "TournamentName";
   static final String KEY_TOURNAMENT_DATE = "TournamentDate";
+  static final String KEY_CAPPED_STROKE = "CappedStroke";
   
   // Golf Tour table columns
   static final String KEY_TOUR_NAME = "TourName";
@@ -610,7 +612,7 @@ public class TourContentProvider extends ContentProvider {
 	    static final String CREATE_PLAYER_DB = "CREATE TABLE " + TABLE_GOLFPLAYER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PLAYER_NAME + " TEXT," + KEY_PLAYER_NIC + " TEXT," + KEY_PLAYER_HC + " REAL," + KEY_PLAYER_IMGURL + " TEXT," + KEY_PLAYER_WINNINGS + " INTEGER)";
 	    static final String CREATE_COURSE_DB = "CREATE TABLE " + TABLE_GOLFCOURSE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COURSE_NAME + " TEXT," + KEY_COURSE_TEE + " TEXT," + KEY_COURSE_PAR + " INTEGER," + KEY_COURSE_SLOPE + " INTEGER," + KEY_COURSE_VALUE + " REAL," + KEY_COURSE_LENGTH + " INTEGER," + KEY_COURSE_IMGURL + " TEXT)";
 	  	static final String	CREATE_HOLE_DB = "CREATE TABLE " + TABLE_GOLFHOLE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COURSE_ID + " INTEGER," + KEY_HOLE_NR + " INTEGER," + KEY_HOLE_PAR + " INTEGER," + KEY_HOLE_INDEX + " INTEGER," + KEY_HOLE_LENGTH + " INTEGER," + KEY_HOLE_NAME + " TEXT)";
-	    static final String CREATE_TOURNAMENT_DB = "CREATE TABLE " + TABLE_GOLFTOURNAMENT + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TOURNAMENT_NAME + " TEXT," + KEY_TOURNAMENT_DATE + " DATE," + KEY_COURSE_ID + " INTEGER, " + KEY_GOLF_MODE + " INTEGER," + KEY_GOLF_GAME + " INTEGER," + KEY_HANDICAPED + " INTEGER," + KEY_INDIVIDUAL_CLS3 + " INTEGER," + KEY_STAKES + " INTEGER," + KEY_STAKES_CLOSEST + " INTEGER," + KEY_STAKES_LONGEST + " INTEGER," + KEY_STAKES_SNAKE + " INTEGER," + KEY_STAKES_1PUT + " INTEGER," + KEY_TOURNAMENT_SPONSOR_PURSE + " INTEGER, " + KEY_TOURNAMENT_IMGURL + " TEXT)"; 
+	    static final String CREATE_TOURNAMENT_DB = "CREATE TABLE " + TABLE_GOLFTOURNAMENT + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TOURNAMENT_NAME + " TEXT," + KEY_TOURNAMENT_DATE + " DATE," + KEY_COURSE_ID + " INTEGER, " + KEY_GOLF_MODE + " INTEGER," + KEY_GOLF_GAME + " INTEGER," + KEY_HANDICAPED + " INTEGER," + KEY_INDIVIDUAL_CLS3 + " INTEGER," + KEY_STAKES + " INTEGER," + KEY_STAKES_CLOSEST + " INTEGER," + KEY_STAKES_LONGEST + " INTEGER," + KEY_STAKES_SNAKE + " INTEGER," + KEY_STAKES_1PUT + " INTEGER," + KEY_TOURNAMENT_SPONSOR_PURSE + " INTEGER, " + KEY_CAPPED_STROKE + " INTEGER, " + KEY_TOURNAMENT_IMGURL + " TEXT)"; 
 	    static final String CREATE_TOUR_DB = "CREATE TABLE " + TABLE_TOUR + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_TOUR_NAME + " TEXT, " + KEY_TOUR_DESC + " TEXT," + KEY_TOUR_IMG + " TEXT)";
 		static final String CREATE_SCORE_DB = "CREATE TABLE " + TABLE_SCORE + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_PLAYER_ID + " INTEGER, " + KEY_TEAM_ID + " INTEGER, " + KEY_TOURNAMENT_ID + " INTEGER, " +  KEY_COURSE_ID + " INTEGER, " + KEY_HOLE_NR + " INTEGER, " + KEY_GOLF_SCORE + " INTEGER)";
 	    static final String CREATE_TT_DB = "CREATE TABLE " + TABLE_TT + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_TOUR_ID + " INTEGER, " + KEY_TOURNAMENT_ID + " INTEGER)";
@@ -662,6 +664,9 @@ public class TourContentProvider extends ContentProvider {
 	      onCreate(_db);
 	    }
   }
+
+
+
   
   /*
 

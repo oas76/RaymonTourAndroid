@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/verify"
+        android:title="verify"
+        android:icon="@drawable/navigation_accept"
+        android:showAsAction="ifRoom"
+    />
+        <item
+        android:id="@+id/next"
+        android:title="next"
+        android:icon="@drawable/navigation_next_item"
+        android:showAsAction="ifRoom"
+    />
+</menu>

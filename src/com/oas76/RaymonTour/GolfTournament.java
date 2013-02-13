@@ -12,7 +12,7 @@ public class GolfTournament {
 		static final int POINTS_TOUR = 2;
 		static final int STROKE_TOUR_MATCH = 3;
 		static final int POINTS_TOUR_MATCH = 4;
-		
+	
 		// Game mode
 		static final int INDIVIDUAL = 1;
 		static final int BEST_BALL  = 2;
@@ -20,25 +20,16 @@ public class GolfTournament {
 		static final int GREEN_SOME = 4;
 		static final int BLOOD_SOME = 5;
 		static final int SCRAMBLE	= 6;
-		static final int KOBENHAGEN = 7;
-		
-		// Team Indicators
-		static final int BLUE = Color.BLUE;
-		static final int GREEN = Color.GREEN;
-		static final int YELLOW = Color.YELLOW;
-		static final int RED = Color.RED;
-		static final int WHITE = Color.WHITE;
-		static final int BLACK = Color.BLACK;
-		static final int MAGENTA = Color.MAGENTA;
-		
+
 		
 		private int gID = 0;
-		private Date gDate;
-		private int gCourceId;
+		private Date gDate = null;
+		private int gCourceId = 0;
 		private int gNrOfPlayers = 0;
 		private int gNrOfTeams = 0;
 		private boolean gIndividualCLS3 = false;
 		private boolean gHandicaped = true;
+		private boolean gCappedStroke = true;
 		private int gTourMode = STROKE_TOUR;
 		private int gTourGame = INDIVIDUAL;
 		private String gTournamentName = "";
@@ -184,6 +175,21 @@ public class GolfTournament {
 		{
 			gCourceId = courceid;
 		}
+		
+		public int getTournamentGolfCourceID() 
+		{
+			return gCourceId;
+		}
+		
+		public void setTournamentDate(Date date)
+		{
+			gDate = date;
+		}
+		
+		public Date getTournamentDate()
+		{
+			return gDate;
+		}
 
 		public void setTournamentNrOfHoles(int nrOfHoles) 
 		{
@@ -219,6 +225,14 @@ public class GolfTournament {
 		public void setTournamentImgUrl(String imgUrl) 
 		{
 			gImgUrl = imgUrl;
+		}
+
+		public boolean getCappedStroke() {
+			return gCappedStroke;
+		}
+
+		public void setCappedStroke(int gCappedStroke) {
+			this.gCappedStroke = (gCappedStroke == 1);
 		}
 			
 	}

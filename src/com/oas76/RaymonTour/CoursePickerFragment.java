@@ -26,7 +26,7 @@ public final class CoursePickerFragment extends DialogFragment {
 		if(((TournamentEdit)getActivity()).mSelectedPlayers == null)
 			((TournamentEdit)getActivity()).mSelectedPlayers = new ArrayList<GolfPlayer>(); 
 		
-		for(GolfPlayer gp:SectionFragment.playerlist)
+		for(GolfPlayer gp: ((RaymonTour)getActivity().getApplication()).getPlayerlist())
 		{
 			list.add(gp.getNick());
 			
@@ -37,9 +37,9 @@ public final class CoursePickerFragment extends DialogFragment {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	    builder.setTitle("Select Course")
-	      	   .setAdapter(new ArrayAdapter<GolfCourse>(getActivity(), android.R.layout.simple_list_item_1, SectionFragment.courselist), new DialogInterface.OnClickListener() {
+	      	   .setAdapter(new ArrayAdapter<GolfCourse>(getActivity(), android.R.layout.simple_list_item_1, ((RaymonTour)getActivity().getApplication()).getCourselist()), new DialogInterface.OnClickListener() {
 	      		   public void onClick(DialogInterface dialog, int which) {
-	      			 ((TournamentEdit)getActivity()).gCourse = SectionFragment.courselist.get(which);
+	      			 ((TournamentEdit)getActivity()).gCourse = ((RaymonTour)getActivity().getApplication()).getCourselist().get(which);
 	      			if(((TournamentEdit)getActivity()).gCourse != null)
 	      			{
                 		Toast.makeText(getActivity(),((TournamentEdit)getActivity()).gCourse.toString() + " selected",Toast.LENGTH_LONG).show();

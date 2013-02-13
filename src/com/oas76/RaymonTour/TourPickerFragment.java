@@ -26,7 +26,7 @@ public final class TourPickerFragment extends DialogFragment {
 		if(((TournamentEdit)getActivity()).mSelectedTour == null)
 			((TournamentEdit)getActivity()).mSelectedTour = new ArrayList<Tour>(); 
 		
-		for(Tour tp:SectionFragment.tourlist)
+		for(Tour tp: (((RaymonTour)getActivity().getApplication()).getTourlist()))
 		{
 			list.add(tp.getTourName());
 			
@@ -44,11 +44,11 @@ public final class TourPickerFragment extends DialogFragment {
 	    		   				boolean isChecked) {
 	    		   			if (isChecked) {
 	    		   				// If the user checked the item, add it to the selected items
-	    		   				((TournamentEdit)getActivity()).mSelectedTour.add(SectionFragment.tourlist.get(which));
+	    		   				((TournamentEdit)getActivity()).mSelectedTour.add((((RaymonTour)getActivity().getApplication()).getTourlist()).get(which));
 	    		   				((TournamentEdit)getActivity()).tboolList[which] = true;
 	    		   			} else if (((TournamentEdit)getActivity()).mSelectedPlayers.contains(which)) {
 	    		   				// Else, if the item is already in the array, remove it 
-	    		   				((TournamentEdit)getActivity()).mSelectedTour.remove(SectionFragment.tourlist.get(which));
+	    		   				((TournamentEdit)getActivity()).mSelectedTour.remove((((RaymonTour)getActivity().getApplication()).getTourlist()).get(which));
 	    		   				((TournamentEdit)getActivity()).tboolList[which] = false;
 	    		   				}
 	    		   			}
@@ -61,7 +61,7 @@ public final class TourPickerFragment extends DialogFragment {
 	    	                	for(int i = 0; i < ((TournamentEdit)getActivity()).tboolList.length; i++)
 	    	                	{
 	    	                		if(((TournamentEdit)getActivity()).tboolList[i])
-	    	                			str = str + SectionFragment.tourlist.get(i).toString();
+	    	                			str = str + (((RaymonTour)getActivity().getApplication()).getTourlist()).get(i).toString();
 	    	                		
 	    	                	}
 	    	                	Toast.makeText(getActivity(),str,Toast.LENGTH_LONG).show();
