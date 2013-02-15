@@ -346,78 +346,44 @@ public class GolfCourse {
 		
 	}
 	
-	/*public int getMatchScore(int holenr, ArrayList<GolfPlayer> golfPlayers, GolfTournament tournament) {
-		int res = 0;
-		int res1 = 0;
-		int res2 = 0;
-		int winner =100;
+	public int[] getTotalGameTeamScore(Context c, GolfTeam team, GolfTournament tournament)
+	{
+		int res[] = new int[2];
+		GolfPlayer standIn = new GolfPlayer(team.getPlayers().get(0).getPlayerID());
+		standIn.setPlayerHandicap(team.getTeamHandicap());
 		
-		if(score[0] == 0 || score[1] == 0)
-			return -1;
 		
-		switch(tournament.getTournamentMode())
+		ContentResolver cr = c.getContentResolver();
+		Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES, 
+								null,
+								TourContentProvider.KEY_PLAYER_ID + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=?",
+								new String[]{String.valueOf(standIn.getPlayerID()),String.valueOf(tournament.getTournamentID())},
+								null);
+		if(cur != null)
 		{
-		case GolfTournament.STROKE_TOUR_MATCH:
-			if(tournament.getTournamentHandicaped())
+			while(cur.moveToNext())
 			{
-				res1 = getHandicapScore(golfPlayers.get(0).getPlayerBoostedHandicap(), score[0], holenr);
-				res2 = getHandicapScore(golfPlayers.get(1).getPlayerBoostedHandicap(), score[1], holenr);
+				int hole = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_NR));
+				int score = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_GOLF_SCORE));
+				res[0] += score;
+				res[1] += getGameScore(hole, score, standIn, tournament);
 			}
-			else
-			{
-				res1 = score[0];
-				res2 = score[1];
-			}
-			if(res1 != res2)
-				winner = (res1 > res2)? 1 : 0;
-			else
-				winner = 100;
-				
-			break;			
-		case GolfTournament.POINTS_TOUR_MATCH:
-			if(tournament.getTournamentHandicaped())
-			{
-				res1 = getHandicapPoints(golfPlayers.get(0).getPlayerBoostedHandicap(), score[0], holenr);
-				res2 = getHandicapPoints(golfPlayers.get(1).getPlayerBoostedHandicap(), score[1], holenr);
-			}	
-			else
-			{
-				res1 = getHandicapPoints(0, score[0], holenr);
-				res2 = getHandicapPoints(0, score[1], holenr);
-			}
-			if(res1 != res2)
-				winner = (res1 > res2)? 0 : 1;
-			else
-				winner = 100;
-			break;
-		default:
-			
-			
-		}
-		return winner;
-	}
-	*/
-	
-	
-
-	public int getGameTeamScore(int holenr,int score, ArrayList<GolfPlayer> players, GolfTournament tournament) {
-		
-		for(GolfPlayer gp : players)
-			gp.setTemp_stroke(score);
-		
-		
-		switch(tournament.getTournamentMode())
-		{
-		case GolfTournament.STROKE_TOUR:
-			break;
-			
-		case GolfTournament.POINTS_TOUR:
-			break;
-
 		}
 		
-		return 0;
+		return res;
 	}
+	
+	
+	
+	public int getGameTeamScore(int holenr,int score, GolfTeam team, GolfTournament tournament) {
+		
+		GolfPlayer standIn = new GolfPlayer(team.getPlayers().get(0).getPlayerID());
+		standIn.setPlayerHandicap(team.getTeamHandicap());
+		
+		return getGameScore(holenr, score, standIn, tournament);
+	}
+	
+	
     
     
 }

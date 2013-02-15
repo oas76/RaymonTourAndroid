@@ -2,7 +2,16 @@ package com.oas76.RaymonTour;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Set;
 
+import android.app.ListActivity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 
 public class GolfTournament {
@@ -42,6 +51,13 @@ public class GolfTournament {
 		private int gStakesSnake = 0;
 		private int gPurse = 0;
 		private String gImgUrl;
+		
+		private int gWinnerClosest = -1;
+		private int gWinnerLongest = -1;
+		private int gWinnerPut = -1;
+		private int gWinnerSneak = -1;
+		
+		private boolean gIsOffical = false;
 		
 		private ArrayList<Integer> gTournamentPlayers = null;
 				
@@ -234,8 +250,146 @@ public class GolfTournament {
 		public void setCappedStroke(int gCappedStroke) {
 			this.gCappedStroke = (gCappedStroke == 1);
 		}
+
+		public int getWinnerClosest() {
+			return gWinnerClosest;
+		}
+
+		public void setWinnerClosest(int gWinnerClosest) {
+			this.gWinnerClosest = gWinnerClosest;
+		}
+
+		public int getWinnerLongest() {
+			return gWinnerLongest;
+		}
+
+		public void setWinnerLongest(int gWinnerLongest) {
+			this.gWinnerLongest = gWinnerLongest;
+		}
+
+		public int getWinnerPut() {
+			return gWinnerPut;
+		}
+
+		public void setWinnerPut(int gWinnerPut) {
+			this.gWinnerPut = gWinnerPut;
+		}
+
+		public int getWinnerSneak() {
+			return gWinnerSneak;
+		}
+
+		public void setWinnerSneak(int gWinnerSneak) {
+			this.gWinnerSneak = gWinnerSneak;
+		}
+
+		public boolean getIsOffical() {
+			return gIsOffical;
+		}
+
+		public void setIsOffical(int gIsOffical) {
+			this.gIsOffical = (gIsOffical == 1);
+		}
+		
+		public ArrayList<GolfPlayer> tournamentResultList(Context context)
+		{
+			int tId = this.getTournamentID();
+			HashMap<Integer, GolfPlayer> map = new HashMap<Integer, GolfPlayer>();
+			Collection<GolfPlayer> res = null;
+			ArrayList<GolfPlayer> list = new ArrayList<GolfPlayer>();
+			ContentResolver cr = context.getApplicationContext().getContentResolver();
+			Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES,
+								  null,
+								  TourContentProvider.KEY_TOURNAMENT_ID + "=?",
+								  new String[]{String.valueOf(this.getTournamentID())},
+								  null);
+			if(cur != null)
+			{
+				// Re-set before start calculateing score
+				ArrayList<GolfPlayer> listmap = new ArrayList<GolfPlayer>();
+				listmap.addAll(map.values());
+				for(GolfPlayer pp : listmap)
+				{
+					map.get(pp.getPlayerID()).setTemp_stroke(0);
+				}
+				
+				for(GolfPlayer gp: ((RaymonTour)context.getApplicationContext()).getPlayerlist() )
+				{
+					gp.setTemp_stroke(0);
+				}
+				
+				
+				while(cur.moveToNext())
+				{
+					int player_id = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_ID));
+					int team_id = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_TEAM_ID));
+					int course_id = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID));
+					int stroke = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_GOLF_SCORE));
+					int hole_nr = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_HOLE_NR));
+					GolfPlayer player = ((RaymonTour)context.getApplicationContext()).getPlayerbyIndex(player_id);
+					if(map.get(player.getPlayerID()) == null)
+						map.put(player.getPlayerID(), player);
+					GolfCourse course = ((RaymonTour)context.getApplicationContext()).getCoursebyIndex(course_id);
+					int score = 0;
+					if(team_id > 0)
+					{
+						GolfTeam team = ((RaymonTour)context.getApplicationContext()).getPlayersByTeamIndex(team_id,this.getTournamentID());
+						for(GolfPlayer gp : team.getPlayers())
+						{
+							if(map.get(gp.getPlayerID()) == null)
+								map.put(gp.getPlayerID(), gp);
+							score = map.get(gp.getPlayerID()).getTemp_stroke() + course.getGameTeamScore(hole_nr, stroke, team, this);
+							map.get(gp.getPlayerID()).setTemp_stroke(score);
+							score = 0;
+						}
+							
+						
+					}
+					else
+					{
+						score =  map.get(player.getPlayerID()).getTemp_stroke() + course.getGameScore(hole_nr, stroke, player, this);
+						map.get(player.getPlayerID()).setTemp_stroke(score);
+					}
+					
+					
+				}
+				
+			}
+			
+			res = map.values();
+			list.clear();
+			list.addAll(res);
+			
+			if(this.getTournamentMode() == this.STROKE_TOUR )
+			{
+				Collections.sort(list,new Comparator<GolfPlayer>(){
+
+					@Override
+					public int compare(GolfPlayer lhs, GolfPlayer rhs) {
+					// TODO Auto-generated method stub
+					return (lhs.getTemp_stroke() - rhs.getTemp_stroke());
+					}
+				
+				
+				});
+				
+			}
+			else
+			{
+				Collections.sort(list,new Comparator<GolfPlayer>(){
+
+					@Override
+					public int compare(GolfPlayer lhs, GolfPlayer rhs) {
+					// TODO Auto-generated method stub
+					return (lhs.getTemp_stroke() - rhs.getTemp_stroke())*-1;
+					}
+				
+				
+				});
+			}
+			
+			return list;
+			
+		}
 			
 	}
-
-
-

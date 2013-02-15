@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_color"
     tools:context=".ScoreEdit" >
     <LinearLayout android:id="@+id/score_head"
 		android:orientation="vertical"
@@ -34,10 +35,6 @@
         		  <TableLayout android:id="@+id/score_input_fragment"
         		      android:layout_width="fill_parent"
         		  	  android:layout_height="wrap_content" />
-        		  <TableLayout android:id="@+id/score_result_fragment"
-        		      android:layout_width="fill_parent"
-        		  	  android:layout_height="wrap_content"/>
-        		  
      </LinearLayout>
 
 

@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -69,10 +70,11 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	                	dialog.dismiss();
 	    	                }
 	    	            })
-	    	            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+	    	            .setNegativeButton("Add New Player", new DialogInterface.OnClickListener() {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
 	    	                	((TournamentEdit)getActivity()).mSelectedPlayers.clear();
+	    	                	startActivity(new Intent(((TournamentEdit)getActivity()),PlayerEdit.class));
 	    	                	dialog.dismiss();
 	    	                    
 	    	                }

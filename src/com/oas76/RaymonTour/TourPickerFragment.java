@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -71,20 +72,17 @@ public final class TourPickerFragment extends DialogFragment {
 	    	                	dialog.dismiss();
 	    	                }
 	    	            })
-	    	            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+	    	            .setNegativeButton("Add New Tour", new DialogInterface.OnClickListener() {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
 	    	                	((TournamentEdit)getActivity()).mSelectedTour.clear();
+	    	                	startActivity(new Intent(((TournamentEdit)getActivity()),TourEdit.class));
 	    	                	dialog.dismiss();
 	    	                    
 	    	                }
 	    	            });
 	          
-	    //.setAdapter(new ArrayAdapter<GolfPlayer>(getActivity(), android.R.layout.simple_list_item_1, SectionFragment.playerlist), new DialogInterface.OnClickListener() {
-	    //    public void onClick(DialogInterface dialog, int which) {
-	               // The 'which' argument contains the index position
-	               // of the selected item
-	           //}
+
 	 
 	    return builder.create();
        

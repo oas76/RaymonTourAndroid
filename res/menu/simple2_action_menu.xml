@@ -5,12 +5,6 @@
         android:title="verify input"
         android:icon="@drawable/navigation_accept"
         android:showAsAction="always"/>
-   		
-   		<item
-        android:id="@+id/add"
-        android:title="next"
-        android:icon="@drawable/content_new"
-        android:showAsAction="always" />
 
         <item
         android:id="@+id/next"

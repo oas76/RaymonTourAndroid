@@ -32,9 +32,6 @@ public final class CoursePickerFragment extends DialogFragment {
 			
 		}
 		
-		int count = list.size();
-		CharSequence[] charList = list.toArray(new CharSequence[count]);
-
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	    builder.setTitle("Select Course")
 	      	   .setAdapter(new ArrayAdapter<GolfCourse>(getActivity(), android.R.layout.simple_list_item_1, ((RaymonTour)getActivity().getApplication()).getCourselist()), new DialogInterface.OnClickListener() {
@@ -50,6 +47,7 @@ public final class CoursePickerFragment extends DialogFragment {
 	      		   }
 	      			   
 	      		});
+	      		
 	 
 	    return builder.create();
        

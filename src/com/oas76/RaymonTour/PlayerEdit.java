@@ -2,7 +2,9 @@ package com.oas76.RaymonTour;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -64,11 +66,22 @@ public class PlayerEdit extends Activity  {
 			editPlayer = true;
 			
 		}
+		
+        if(((RaymonTour)getApplicationContext()).getPlayerlist().size() == 0)
+        {
+			DialogFragment newFragment = new TextFragment();
+			((TextFragment)newFragment).setDisplayText("Greetings and welcome to your first experience with the Raymon Tour android app. " +
+													   "Lets start with adding players!!  Input player details and press «v« to save, «+« to add a new players, and «>«to progress." +
+													   "NB! You can always edit and add new players later from the «Players« field in the main window dropdown. Enjoy");
+			
+		    newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
+        	
+        }
 
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
-		verifyButton = (ImageButton)findViewById(R.id.player_verify);
-		hookupButton();
+		//verifyButton = (ImageButton)findViewById(R.id.player_verify);
+		//hookupButton();
 	}
 
 	@Override
@@ -79,64 +92,67 @@ public class PlayerEdit extends Activity  {
 	}
 	
 
-	/*
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent = null;
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
+		case R.id.verify:
+			verifyData();
+			break;
+		case R.id.next:
+			intent = new Intent(this,TourEdit.class);
+			break;
+		case R.id.add:
+			intent = new Intent(this,PlayerEdit.class);
+			break;
 		}
+		if(intent != null)
+			startActivity(intent);
 		return super.onOptionsItemSelected(item);
 	}
-	*/
 	
-	private void hookupButton(){
-		final Activity context = this;
-		verifyButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				String nic = ((EditText)findViewById(R.id.player_nic)).getText().toString();
-				String name = ((EditText)findViewById(R.id.player_full)).getText().toString();
-				String hc =  ((EditText)findViewById(R.id.player_hc)).getText().toString();
-				double dhc = Double.parseDouble(hc);
-				if(nic.equals("") || name.equals("") || hc.equals(""))
-				{
-					Toast.makeText(v.getContext(),"All entries must be edited",Toast.LENGTH_LONG).show();
-					return;
-				}
-				else
-				{
-					Toast.makeText(v.getContext(),"Added:" + nic + ":" + name + ":" + hc,Toast.LENGTH_LONG).show();
-					ContentValues values = new ContentValues();
-					ContentResolver cr = getContentResolver();
-					
-					values.put(TourContentProvider.KEY_PLAYER_NIC, nic);
-					values.put(TourContentProvider.KEY_PLAYER_NAME, name);
-					values.put(TourContentProvider.KEY_PLAYER_HC, dhc);
-					
-					if(id > -1 && editPlayer)
-						cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS,Integer.toString(id)), values, null, null);
-					else
-					{
-						cr.insert(TourContentProvider.CONTENT_URI_PLAYERS, values);
-					}
-					setResult(RESULT_OK); 
-					finish();
 	
-				}
-				
+	private boolean verifyData(){
+		String nic = ((EditText)findViewById(R.id.player_nic)).getText().toString();
+		String name = ((EditText)findViewById(R.id.player_full)).getText().toString();
+		String hc =  ((EditText)findViewById(R.id.player_hc)).getText().toString();
+		double dhc = 0;
+		try{
+			dhc = Double.parseDouble(hc);
 			}
+		catch(Exception e)
+		{
+			hc="";
+		}
+
+		
+		if(nic.equals("") || name.equals("") || hc.equals(""))
+		{
+			Toast.makeText(this,"All entries must be edited",Toast.LENGTH_LONG).show();
+			return false;
+		}
+		else
+		{
 			
-		});
+			ContentValues values = new ContentValues();
+			ContentResolver cr = getContentResolver();
+			
+			values.put(TourContentProvider.KEY_PLAYER_NIC, nic);
+			values.put(TourContentProvider.KEY_PLAYER_NAME, name);
+			values.put(TourContentProvider.KEY_PLAYER_HC, dhc);
+			
+			if(id > -1 && editPlayer)
+				cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS,Integer.toString(id)), values, null, null);
+			else
+			{
+				cr.insert(TourContentProvider.CONTENT_URI_PLAYERS, values);
+			}
+			Toast.makeText(this,"Added:" + nic + ":" + name + ":" + hc,Toast.LENGTH_LONG).show();
+			return true;
+		}
 	}
+	
 	
     @Override
     public void onConfigurationChanged(Configuration newConfig)

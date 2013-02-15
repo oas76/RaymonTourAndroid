@@ -48,11 +48,9 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	    private ArrayList<GolfPlayer> getFirstPlayerFromTeams()
 	    {
 	    	ArrayList<GolfPlayer> ret_list = new ArrayList<GolfPlayer>();
-	    	int i = 0;
 	    	for(GolfTeam gt : listdata)
 	    	{
-	    		ret_list.add(gt.getPlayers().get(i));
-	    		i++;
+	    		ret_list.add(gt.getPlayers().get(0));
 	    	}
 	    	return ret_list;
 	    }
@@ -65,11 +63,12 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	        int score_id = -1;
 	        int team_id = 0;
 	        int color = 0;
+	        int smart_id = 0 ;
 	        int[] total_score = null;
 	        this.tournament = ((RaymonTour)context.getApplicationContext()).getTournamentbyIndex(args.getInt("TournamentId"));
 	        this.holenr = args.getInt("HoleId");
 	        this.course = ((RaymonTour)context.getApplicationContext()).getCoursebyIndex(this.tournament.getTournamentGolfCourceID());
-	   	 
+
 
 	        
 	        ContentResolver cr = getContext().getContentResolver();
@@ -113,7 +112,7 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	        
 	        // Set total current score
 	        if(layoutResourceId == R.layout.listview_scoreedit_row)
-	        	total_score = course.getTotalGameScore(context, listdata.get(position).getPlayers().get(0), tournament);
+	        	total_score = course.getTotalGameTeamScore(context, listdata.get(position), tournament);
 	        else if(layoutResourceId == R.layout.listview_matchedit_view)
 	        	total_score = course.getTotalMatchScore(context,getFirstPlayerFromTeams(), tournament);
         	
@@ -142,6 +141,39 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	            	holder.matchCheck.setOnCheckedChangeListener(new MyOnCheckChangeListener(score_id,row));
 	            	holder.txtScore = (TextView)row.findViewById(R.id.score_status);
 	            }
+	            else if(layoutResourceId == R.layout.listview_cl1sedit_view)
+	            {
+	            	if(team_id == 0)
+	            		smart_id = listdata.get(position).getPlayers().get(0).getPlayerID();
+	            	else
+	            		smart_id = team_id;
+	            		
+	            	holder.longestCheck = (CheckBox)row.findViewById(R.id.score_longest);
+	            	holder.longestCheck.setOnCheckedChangeListener(new OnScoreCheckChangeListener(context,tournament.getTournamentID(),smart_id,"Longest"));
+	            	if(tournament.getWinnerLongest() == smart_id )
+	            		holder.longestCheck.setChecked(true);
+	            	else
+	            		holder.longestCheck.setChecked(false);
+	            	holder.closestCheck = (CheckBox)row.findViewById(R.id.score_closest);
+	            	holder.closestCheck.setOnCheckedChangeListener(new OnScoreCheckChangeListener(context,tournament.getTournamentID(),smart_id,"Closest"));
+	            	if(tournament.getWinnerClosest() == smart_id)
+	            		holder.closestCheck.setChecked(true);
+	            	else
+	            		holder.closestCheck.setChecked(false);
+	            	holder.putCheck = (CheckBox)row.findViewById(R.id.score_1Put);
+	            	holder.putCheck.setOnCheckedChangeListener(new OnScoreCheckChangeListener(context,tournament.getTournamentID(),smart_id,"Put"));
+	            	if(tournament.getWinnerPut() == smart_id)
+	            		holder.putCheck.setChecked(true);
+	            	else
+	            		holder.putCheck.setChecked(false);
+	            	holder.sneakCheck = (CheckBox)row.findViewById(R.id.score_snake);
+	            	holder.sneakCheck.setOnCheckedChangeListener(new OnScoreCheckChangeListener(context,tournament.getTournamentID(),smart_id,"Snake"));
+	            	if(tournament.getWinnerSneak() == smart_id)
+	            		holder.sneakCheck.setChecked(true);
+	            	else
+	            		holder.sneakCheck.setChecked(false);
+	  
+	            }
 	            
 	            
 	            row.setTag(holder);
@@ -156,7 +188,7 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	        		holder.editStrokes.setText(String.valueOf(score));
 	        		int reg_score = 0;
 	        		if(team_id > 0)
-	        			reg_score = course.getGameTeamScore(holenr, score,listdata.get(position).getPlayers(), tournament);
+	        			reg_score = course.getGameTeamScore(holenr, score,listdata.get(position), tournament);
 	        		else
 	        			reg_score = course.getGameScore(holenr,score,listdata.get(position).getPlayers().get(0),tournament);
 	        		
@@ -164,7 +196,12 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	        		holder.txtScore.setText(String.valueOf(reg_score) + "  " + String.valueOf(total_score[0]) + "/" + String.valueOf(total_score[1]));
 	        	}
 	        	else if(layoutResourceId == R.layout.listview_matchedit_view)
+	        	{
 	        		holder.matchCheck.setChecked(true);
+	        		String res_txt = getMatchText(position,total_score);
+	        		holder.txtScore.setText(res_txt);
+	      					
+	        	}
 	        		
 	        	
 	        }
@@ -173,7 +210,12 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 	  	        if(layoutResourceId == R.layout.listview_scoreedit_row)
 	  	        	holder.txtScore.setText("0  " + String.valueOf(total_score[0]) + "/" + String.valueOf(total_score[1]));
 	  	    	else if(layoutResourceId == R.layout.listview_matchedit_view)
+	  	    	{
 	        		holder.matchCheck.setChecked(false);
+	        		String res_txt = getMatchText(position,total_score);
+	        		holder.txtScore.setText(res_txt);
+	      					
+	  	    	}
 	  	     	
 	  	
 	  	    }
@@ -181,14 +223,101 @@ public class ScoreEditAdapter extends ArrayAdapter<GolfTeam> {
 		}
 		
 	    
-	    static class PlayerHolder
+	    private String getMatchText(int position, int[] total_score) {
+    		int result = 0;
+    		String res_txt = "";
+    		
+			if(position == 0)
+    			result = total_score[0] - total_score[1];
+    		else
+    			result = total_score[1] - total_score[0];
+			
+			if(result > 0)
+				res_txt = String.valueOf(result) + " UP";
+			else if(result < 0)
+				res_txt = String.valueOf((result*-1)) + " DOWN";
+			else
+				res_txt = "EVEN";
+			return res_txt;
+		}
+
+
+		static class PlayerHolder
 	    {
 	        TextView txtNic;
 	        TextView txtScore;
 	        EditText editStrokes;
 	        CheckBox matchCheck;
+	        CheckBox longestCheck;
+	        CheckBox closestCheck;
+	        CheckBox putCheck;
+	        CheckBox sneakCheck;
 	        View teamIndicator;
 	    }
+	}
+
+
+	class OnScoreCheckChangeListener implements OnCheckedChangeListener
+	{
+		int teamid;
+		int tournamentid;
+		String game;
+		Context con;
+	
+		public OnScoreCheckChangeListener(Context context, int tournament_id,int team_id, String game)
+		{
+			super();
+			this.teamid = team_id;
+			this.tournamentid = tournament_id;
+			this.game = game;
+			this.con = context;
+		}
+
+		@Override
+		public void onCheckedChanged(CompoundButton xx,
+				boolean isChecked) {
+			
+			ContentResolver cr = con.getApplicationContext().getContentResolver();
+			ContentValues value = new ContentValues();
+			
+			if(game.equals("Longest"))
+			{
+				if(isChecked)
+					value.put(TourContentProvider.KEY_WINNER_LONGEST, teamid);
+				else
+					value.put(TourContentProvider.KEY_WINNER_LONGEST,-1);
+			}
+			else if(game.equals("Closest"))
+			{
+				if(isChecked)
+					value.put(TourContentProvider.KEY_WINNER_CLOSEST, teamid);
+				else
+					value.put(TourContentProvider.KEY_WINNER_CLOSEST,-1);
+			}
+			else if(game.equals("Put"))
+			{
+				if(isChecked)
+					value.put(TourContentProvider.KEY_WINNER_PUT, teamid);
+				else
+					value.put(TourContentProvider.KEY_WINNER_PUT,-1);
+			}
+			else if(game.equals("Snake"))
+			{
+				if(isChecked)
+					value.put(TourContentProvider.KEY_WINNER_SNEAK, teamid);
+				else
+					value.put(TourContentProvider.KEY_WINNER_SNEAK,-1);
+			}
+			
+			cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TOURNAMENTS,String.valueOf(tournamentid)),
+					         value,
+					         null,
+					         null);
+
+
+		}
+
+
 	}
 
 	class MyOnCheckChangeListener implements OnCheckedChangeListener

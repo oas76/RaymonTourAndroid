@@ -33,6 +33,9 @@ public class ScoreInputFragment extends ListFragment {
 	            Bundle savedInstanceState) {
 		
 		int holeNr = getArguments().getInt(ARG_SECTION_NUMBER);
+		if(holeNr > 18)
+			holeNr = 18;
+		
 		int tId = getArguments().getInt(TOURNAMENT_ID);
 		int pId = -1;
 		int pId_index = -1;
@@ -67,8 +70,8 @@ public class ScoreInputFragment extends ListFragment {
 			playerList.clear();
 			for(int i = 1; i<=4; i++)
 			{
-				if(this.getPlayersByTeamIndex(i,tId).size() > 0)
-					playerList.add(new GolfTeam(this.getPlayersByTeamIndex(i,tId)));
+				if( ((RaymonTour)myActivity.getApplicationContext()).getPlayersByTeamIndex(i, tId).getPlayers().size() > 0)
+					playerList.add(((RaymonTour)myActivity.getApplicationContext()).getPlayersByTeamIndex(i, tId));
 				
 			}
 		}
@@ -100,6 +103,9 @@ public class ScoreInputFragment extends ListFragment {
 				layoutId = R.layout.listview_scoreedit_row;
 		}
 		
+		if(getArguments().getInt(ARG_SECTION_NUMBER) == 19)
+			layoutId = R.layout.listview_cl1sedit_view;
+		
 
 		
 		Bundle args = new Bundle();
@@ -116,28 +122,6 @@ public class ScoreInputFragment extends ListFragment {
 	}
 	
 	
-    private ArrayList<GolfPlayer> getPlayersByTeamIndex(int index, int tournament_id)
-    {
-    	ArrayList<GolfPlayer> res = new ArrayList<GolfPlayer>();
-    	ContentResolver cr = myActivity.getContentResolver();
-        Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES,
-        				null,
-        				TourContentProvider.KEY_HOLE_NR + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_TEAM_ID + "=?",
-        				new String[]{"1", String.valueOf(tournament_id), String.valueOf(index)},
-        				null);
-        if(cur != null)
-        {
-        	// Correct score entry found
-        	res.clear();
-        	while(cur.moveToNext())
-        	{
-        		int player_index = cur.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_ID);
-        		int player_id = cur.getInt(player_index);
-        		res.add(((RaymonTour)myActivity.getApplicationContext()).getPlayerbyIndex(player_id));
-        	}
-            	
-        }
-        return res;
-    }
+
 	
 }

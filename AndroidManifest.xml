@@ -57,8 +57,7 @@
             android:name="com.oas76.RaymonTour.PlayerEdit"
             android:configChanges="orientation"
             android:label="@string/title_activity_player_edit"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
@@ -74,15 +73,23 @@
             android:name="com.oas76.RaymonTour.TourEdit"
             android:configChanges="orientation"
             android:label="@string/title_activity_tour_edit"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />
         </activity>
         <activity
             android:name="com.oas76.RaymonTour.ScoreEdit"
-            android:label="@string/title_activity_score_edit" >
+            android:label="@string/title_activity_score_edit" 
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.oas76.RaymonTour.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.oas76.RaymonTour.CourseEdit"
+            android:label="@string/title_activity_course_edit" 
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.oas76.RaymonTour.MainActivity" />

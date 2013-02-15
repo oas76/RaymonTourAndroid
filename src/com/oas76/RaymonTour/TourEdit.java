@@ -3,8 +3,10 @@ package com.oas76.RaymonTour;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -59,49 +61,80 @@ public class TourEdit extends Activity {
 	
 			editTour = true;
 		}
-			
-	verifyButton = (ImageButton)findViewById(R.id.tour_verify);
-	hookupButton();
-
-		
-		
-	}
-	
-	private void hookupButton(){
-		final Activity context = this;
-		verifyButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				String name = ((EditText)findViewById(R.id.tour_name)).getText().toString();
-				String desc =  ((EditText)findViewById(R.id.tour_desc)).getText().toString();
-				if(desc.equals("") || name.equals("") )
-				{
-					Toast.makeText(v.getContext(),"All entries must be edited",Toast.LENGTH_LONG).show();
-					return;
-				}
-				else
-				{
-					ContentValues values = new ContentValues();
-					ContentResolver cr = getContentResolver();
-					
-					values.put(TourContentProvider.KEY_TOUR_DESC, desc);
-					values.put(TourContentProvider.KEY_TOUR_NAME, name);
-					
-					if(id > -1 && editTour)
-						cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TOURS,Integer.toString(id)), values, null, null);
-					else
-					{
-						cr.insert(TourContentProvider.CONTENT_URI_TOURS, values);
-					}
-					setResult(RESULT_OK);
-					finish();
-	
-				}
+        
+		if(((RaymonTour)getApplicationContext()).getTourlist().size() == 0)
+        {
+				DialogFragment newFragment = new TextFragment();
+				((TextFragment)newFragment).setDisplayText("Allrigth...we now need to set up a tour for your players. Think PGA tour, LPGA tour etc." +
+				                                           "Create virtual tours that can last for days, weeks and even years. A tour should contain multipple golf tournaments" + 
+						                                   " and a tournament can be part of multipple tours. Confused ? You will get the hang of it. By the way, «v«, «+«and «>«is the same as before," + 
+				                                           " and naturally, you can later access your tours from the main menu dropdown.");
 				
-			}
-			
-		});
+			    newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
+
+        }
+		
+		
 	}
+
+	
+	private boolean verifyData()
+	{
+		String name = ((EditText)findViewById(R.id.tour_name)).getText().toString();
+		String desc =  ((EditText)findViewById(R.id.tour_desc)).getText().toString();
+		if(desc.equals("") || name.equals("") )
+		{
+			Toast.makeText(this,"All entries must be edited",Toast.LENGTH_LONG).show();
+			return false;
+		}
+		else
+		{
+			ContentValues values = new ContentValues();
+			ContentResolver cr = getContentResolver();
+			
+			values.put(TourContentProvider.KEY_TOUR_DESC, desc);
+			values.put(TourContentProvider.KEY_TOUR_NAME, name);
+			
+			if(id > -1 && editTour)
+				cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TOURS,Integer.toString(id)), values, null, null);
+			else
+			{
+				cr.insert(TourContentProvider.CONTENT_URI_TOURS, values);
+			}
+			return true;
+		}
+
+	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.action_menu,menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent = null;
+		switch (item.getItemId()) {
+		case R.id.verify:
+			verifyData();
+			break;
+		case R.id.next:
+			intent = new Intent(this,CourseEdit.class);
+			break;
+		case R.id.add:
+			intent = new Intent(this,TourEdit.class);
+			break;
+		}
+		if(intent != null)
+			startActivity(intent);
+		return super.onOptionsItemSelected(item);
+	}
+	
 	
     @Override
     public void onConfigurationChanged(Configuration newConfig)

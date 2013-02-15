@@ -16,12 +16,16 @@ import org.apache.http.util.EntityUtils;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,7 +94,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     			break;
     		case 4:
     			EDIT_ACTIVITY = "Course";
-    			//intent = new Intent(myActivity, CourseEdit.class);
+    			intent = new Intent(myActivity, CourseEdit.class);
     			break;
     			
     	}
@@ -107,7 +111,7 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	Object[] obj = null;
     	listView = new ListView(getActivity());
     	
-    	// Create initial placeholder objects
+    	/* Create initial placeholder objects
     	GolfPlayer gp = new GolfPlayer(0, "Press «+« to add players to your app");
     	GolfCourse gc = new GolfCourse(0, "Press «+« to add courses to your app");
     	GolfTournament gt = new GolfTournament(0,"Press «+« to add a new tournament to your app");
@@ -130,8 +134,9 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	{
     		((RaymonTour)myActivity.getApplication()).getTourlist().add(gTour);
     	}
+    	*/
     	
-    	// Create initial placeholder objects
+
     	
     	at = new GolfTournamentAdapter(listView.getContext(),
     									R.layout.listview_tournament_row, 
@@ -375,6 +380,11 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 					int date_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_DATE);
 					course_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_COURSE_ID);
 					int cstroke_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_CAPPED_STROKE);
+					int winner_closest = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_CLOSEST);
+					int winner_longest = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_LONGEST);
+					int winner_put = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_PUT);
+					int winner_sneak = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_SNEAK);
+					int isOfficial = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_OFFICIAL);
 					
 					//int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY....);
 				
@@ -399,6 +409,11 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 												cursor.getInt(stakes_1put_index));
 						newTournament.setTournamentDate(Date.valueOf(cursor.getString(date_index)));
 						newTournament.setCappedStroke(cursor.getInt(cstroke_index));
+						newTournament.setWinnerClosest(cursor.getInt(winner_closest));
+						newTournament.setWinnerLongest(cursor.getInt(winner_longest));
+						newTournament.setWinnerPut(cursor.getInt(winner_put));
+						newTournament.setWinnerSneak(cursor.getInt(winner_sneak));
+						newTournament.setIsOffical(cursor.getInt(isOfficial));
 						
 
 					
@@ -485,7 +500,6 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 		
 		
 	}	
-
 	
 	
 

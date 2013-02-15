@@ -32,13 +32,7 @@ import android.support.v4.app.NavUtils;
 
 public class TournamentEdit extends Activity implements OnSharedPreferenceChangeListener   {
 	
-	ImageButton datePicker = null;
-	ImageButton tournamentSettings = null;
-	ImageButton addPlayer = null;
-	ImageButton addCourse = null;
-	ImageButton addTour = null;
-	ImageButton verify = null;
-	EditText name = null;
+	String name = null;
 	int tournament_id = -1;
 	
 	boolean bdate = false;
@@ -52,6 +46,17 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	int tMonth = 0;
 	int tDate = 0;
 	
+	static final int STATE_INTRO = -1;
+	static final int STATE_PLAYERS = 0;
+	static final int STATE_COURSE = 1;
+	static final int STATE_TOUR = 2;
+	static final int STATE_TEAMS = 3;
+	static final int STATE_NAME = 4;
+	static final int STATE_DATE = 5;
+	static final int STATE_SETTINGS = 6;
+	
+	static int CURR_STATE = STATE_PLAYERS;
+	
 	static ArrayList<GolfPlayer> mSelectedPlayers = null;
 	boolean[] boolList = new boolean[30];
 	boolean[] tboolList = new boolean[30];
@@ -64,42 +69,39 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tournament_edit);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		// Show the Up button in the action bar.
+		
+	    if(((RaymonTour)getApplicationContext()).getTournamnetlist().size() == 0)
+	    {
+	    	   CURR_STATE = STATE_INTRO;
+	    	   DialogFragment newFragment = new TextFragment();
+	   		   ((TextFragment)newFragment).setDisplayText("OK.. Now to the real stuff. Setting up the tournament. If you have added players, tours and courses, this should be a walk in the park" + 
+	   				   									  "Just input and press «>«. When finished, press «V«. Notice that when you save («V«), the tournament settings will be a snapshot of the current" +
+	   				   									  "settings...worried ? Just try it out " );
+	    	   
+	   		   newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
+	    }
+	    else
+	    	CURR_STATE = STATE_INTRO;
+		
+	    getActionBar().setDisplayHomeAsUpEnabled(false);
+
 		// If started with intent with id
 		if(getIntent().getExtras() != null)
 			id = getIntent().getExtras().getInt("id");
-		
-		name = (EditText)findViewById(R.id.tournament_name);
-		
-		datePicker =(ImageButton)findViewById(R.id.date_button);
-		hookupDateButton();
-		
-		tournamentSettings = (ImageButton)findViewById(R.id.tournament_settings);
-		hookupTournamentSettings();
-		
-		addPlayer = (ImageButton)findViewById(R.id.player_button);
-		hookupAddPlayer();
-		
-		verify = (ImageButton)findViewById(R.id.tournament_verify);
-		hookupVerify();
-		
-		addCourse = (ImageButton)findViewById(R.id.course_button);
-		hookupCourse();
-		
-		addTour = (ImageButton)findViewById(R.id.tour_button);
-		hookupTour();
-		
-		
-		
-		
-
+	
+	}
+	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		CURR_STATE = STATE_INTRO;
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.action_menu,menu);
+		getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
 		return super.onCreateOptionsMenu(menu);
 		
 	}
@@ -107,110 +109,126 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
+
+		case R.id.next:
+				if(CURR_STATE == STATE_INTRO)
+				{
+					hookupAddPlayer();
+					CURR_STATE = STATE_PLAYERS;
+				}
+				else if(CURR_STATE == STATE_PLAYERS)
+				{
+					hookupCourse();
+					CURR_STATE = STATE_COURSE;
+				}
+				else if(CURR_STATE == STATE_COURSE)
+				{
+					hookupTour();
+					CURR_STATE = STATE_TOUR;
+				}
+				else if(CURR_STATE == STATE_TOUR)
+				{
+					hookupDateButton();
+					CURR_STATE = STATE_DATE;
+				}
+				else if(CURR_STATE == STATE_DATE)
+				{
+					hookupName();
+					CURR_STATE = STATE_NAME;
+				}
+				else if(CURR_STATE == STATE_NAME)
+				{
+					//hookupTeams();
+					CURR_STATE = STATE_TEAMS;
+				}
+				else if(CURR_STATE == STATE_TEAMS)
+				{
+					hookupTournamentSettings();
+					CURR_STATE = STATE_SETTINGS;
+				}
+				else if(CURR_STATE == STATE_SETTINGS)
+				{
+					if(hookupVerify())
+					{
+						CURR_STATE  = STATE_PLAYERS;
+						startActivity(new Intent(this, MainActivity.class));
+					}
+					else
+						CURR_STATE = STATE_PLAYERS;
+				}
+				break;
+		case R.id.verify:
+			if(hookupVerify())
+			{
+				CURR_STATE  = STATE_PLAYERS;
+				startActivity(new Intent(this, MainActivity.class));
+			}
+			else
+				CURR_STATE = STATE_PLAYERS;
+			break;
+				
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
 
+	
+	private void hookupName()
+	{
+		DialogFragment newFragment = new NameEditFragment();
+	    newFragment.show(getFragmentManager(), "namepicker");
+
+	}
+	
 	private void hookupDateButton(){
-		final Activity context = this;
-		datePicker.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				DialogFragment newFragment = new DatePickerFragment();
-			    newFragment.show(getFragmentManager(), "datePicker");
-			}
-			
-		});
+		DialogFragment newFragment = new DatePickerFragment();
+	    newFragment.show(getFragmentManager(), "datePicker");
+
 	}
 	
 	private void hookupTournamentSettings(){
-		final Activity context = this;
-		tournamentSettings.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				Intent intent = new Intent(context,SettingsActivity.class);
-				startActivity(intent);
-			}
-			
-		});
+		Intent intent = new Intent(this,SettingsActivity.class);
+		startActivity(intent);
 	}
 	
-	private void hookupVerify(){
-		final Activity context = this;
-		verify.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				// Check input field,if not empty
-				if(!((TournamentEdit)context).name.getText().toString().equals("") )
-				{
-					bname = true;
-					Toast.makeText(context,((TournamentEdit)context).name.getText().toString(),Toast.LENGTH_LONG).show();
-				}
+	private boolean hookupVerify(){
+		// Check input field,if not empty
+		if(!(name.equals("")) )
+		{
+			bname = true;
+			Toast.makeText(this,this.name,Toast.LENGTH_LONG).show();
+		}
 				
-				if(((TournamentEdit)context).setData())
-				{
-					mSelectedPlayers.clear();
-					mSelectedTour.clear();
-					setResult(RESULT_OK);
-					finish();
-				}
-				else
-					Toast.makeText(context,"All fields must be set before creating a tournament",Toast.LENGTH_LONG).show();
-					
-			}
-			
-		});
+		if(setData())
+		{
+			mSelectedPlayers.clear();
+			mSelectedTour.clear();
+			return true;
+		}
+		else
+		{
+			Toast.makeText(this,"Some mandatory info is missing before creating a tournament. Press «>",Toast.LENGTH_LONG).show();
+			return false;
+		}
+
 	}
 	
 	private void hookupAddPlayer(){
-		final Activity context = this;
-		addPlayer.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				DialogFragment newFragment = new PlayerPickerFragment();
-			    newFragment.show(getFragmentManager(), "playerPicker");
+		DialogFragment newFragment = new PlayerPickerFragment();
+		newFragment.show(getFragmentManager(), "playerPicker");
 
-			}
-			
-		});
 	}
 	
 	private void hookupCourse(){
-		final Activity context = this;
-		addCourse.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				DialogFragment newFragment = new CoursePickerFragment();
-			    newFragment.show(getFragmentManager(), "coursePicker");
-
-			}
-			
-		});
+		DialogFragment newFragment = new CoursePickerFragment();
+	    newFragment.show(getFragmentManager(), "coursePicker");
 	}
 	
 	private void hookupTour(){
-		final Activity context = this;
-		addTour.setOnClickListener(new OnClickListener() {
-			public void onClick(View v)
-			{
-				DialogFragment newFragment = new TourPickerFragment();
-			    newFragment.show(getFragmentManager(), "tourPicker");
-
-			}
-			
-		});
+		DialogFragment newFragment = new TourPickerFragment();
+	    newFragment.show(getFragmentManager(), "tourPicker");
 	}
+	
 	public void setDate(int year, int month, int date){
 		Toast.makeText(this,"Year:Month:Date" + String.valueOf(year) + ":" + String.valueOf(month) + ":" + String.valueOf(date),Toast.LENGTH_LONG).show();
 		bdate = true;
@@ -238,10 +256,15 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 			values.put(TourContentProvider.KEY_STAKES, Integer.parseInt(prefs.getString("stakes_tournament", "100")));
 			values.put(TourContentProvider.KEY_TOURNAMENT_SPONSOR_PURSE, Integer.parseInt(prefs.getString("purse", "0")));
 			values.put(TourContentProvider.KEY_TOURNAMENT_IMGURL, "");
-			values.put(TourContentProvider.KEY_TOURNAMENT_NAME, name.getText().toString());
+			values.put(TourContentProvider.KEY_TOURNAMENT_NAME, name);
 			values.put(TourContentProvider.KEY_COURSE_ID, gCourse.getCourceID());
 			values.put(TourContentProvider.KEY_TOURNAMENT_DATE, String.valueOf(tYear) + "-" + String.valueOf(tMonth+1) + "-" + String.valueOf(tDate));
 			values.put(TourContentProvider.KEY_CAPPED_STROKE, prefs.getBoolean("cap_score",true));
+			values.put(TourContentProvider.KEY_WINNER_CLOSEST, -1);
+			values.put(TourContentProvider.KEY_WINNER_LONGEST, -1);
+			values.put(TourContentProvider.KEY_WINNER_PUT, -1);
+			values.put(TourContentProvider.KEY_WINNER_SNEAK, -1);
+			values.put(TourContentProvider.KEY_TOURNAMENT_OFFICIAL, 0);
 			
 			
 			Uri new_entry_uri= cr.insert(TourContentProvider.CONTENT_URI_TOURNAMENTS, values);

@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.ActionBar;
+import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -32,7 +35,7 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
 		final ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        String input[] = new String[]{"Hole 1","Hole 2","Hole 3","Hole 4","Hole 5","Hole 6","Hole 7","Hole 8","Hole 9","Hole 10","Hole 11","Hole 12","Hole 13","Hole 14","Hole 15","Hole 16","Hole 17","Hole 18","Final Result"};
+        String input[] = new String[]{"Hole 1","Hole 2","Hole 3","Hole 4","Hole 5","Hole 6","Hole 7","Hole 8","Hole 9","Hole 10","Hole 11","Hole 12","Hole 13","Hole 14","Hole 15","Hole 16","Hole 17","Hole 18","CL1S","Leaderboard"};
         menu_entries = input.length;
         
         // Store ID for tournament
@@ -117,24 +120,68 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		SELECTED_VIEW = itemPosition;
+		
+		if(itemPosition < 18)
+		{
 
-		ListFragment fragment = new ScoreInputFragment();
-        Bundle args = new Bundle();
-        args.putInt(ScoreInputFragment.ARG_SECTION_NUMBER, itemPosition + 1);
-        args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
-        fragment.setArguments(args);
-        getFragmentManager().beginTransaction()
+			ListFragment fragment = new ScoreInputFragment();
+			Bundle args = new Bundle();
+			args.putInt(ScoreInputFragment.ARG_SECTION_NUMBER, itemPosition + 1);
+			args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
+			fragment.setArguments(args);
+			getFragmentManager().beginTransaction()
                 .replace(R.id.score_input_fragment, fragment)
                 .commit();
 		
-        TextView head = (TextView)findViewById(R.id.score_headline);
-        TextView head2 = (TextView)findViewById(R.id.score_headline2);
-        TextView details = (TextView)findViewById(R.id.score_details);
-        GolfTournament gt = ((RaymonTour)getApplicationContext()).getTournamentbyIndex(TOURNAMENT_ID);
-        GolfCourse gc = ((RaymonTour)getApplicationContext()).getCoursebyIndex(gt.getTournamentGolfCourceID());
-        head.setText(gc.getCourceName());
-        head2.setText("Hole " + String.valueOf(SELECTED_VIEW + 1) + " : " + gc.getHoleName(SELECTED_VIEW + 1));
-        details.setText("Par: " + gc.getHolePar(SELECTED_VIEW + 1) + " Index: " + gc.getHoleIndex(SELECTED_VIEW + 1) + " Length: " + gc.getHoleLength(SELECTED_VIEW + 1));
+			TextView head = (TextView)findViewById(R.id.score_headline);
+			TextView head2 = (TextView)findViewById(R.id.score_headline2);
+			TextView details = (TextView)findViewById(R.id.score_details);
+			GolfTournament gt = ((RaymonTour)getApplicationContext()).getTournamentbyIndex(TOURNAMENT_ID);
+			GolfCourse gc = ((RaymonTour)getApplicationContext()).getCoursebyIndex(gt.getTournamentGolfCourceID());
+			head.setText(gc.getCourceName());
+			head2.setText("Hole " + String.valueOf(SELECTED_VIEW + 1) + " : " + gc.getHoleName(SELECTED_VIEW + 1));
+			details.setText("Par: " + gc.getHolePar(SELECTED_VIEW + 1) + " Index: " + gc.getHoleIndex(SELECTED_VIEW + 1) + " Length: " + gc.getHoleLength(SELECTED_VIEW + 1));
+		}
+		else if(itemPosition == 18)
+		{
+			ListFragment fragment = new ScoreInputFragment();
+			Bundle args = new Bundle();
+			args.putInt(ScoreInputFragment.ARG_SECTION_NUMBER, itemPosition + 1);
+			args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
+			fragment.setArguments(args);
+			getFragmentManager().beginTransaction()
+                .replace(R.id.score_input_fragment, fragment)
+                .commit();
+		
+			TextView head = (TextView)findViewById(R.id.score_headline);
+			TextView head2 = (TextView)findViewById(R.id.score_headline2);
+			TextView details = (TextView)findViewById(R.id.score_details);
+			GolfTournament gt = ((RaymonTour)getApplicationContext()).getTournamentbyIndex(TOURNAMENT_ID);
+			GolfCourse gc = ((RaymonTour)getApplicationContext()).getCoursebyIndex(gt.getTournamentGolfCourceID());
+			head.setText(gt.getTournamentName() + " : " + gc.getCourceName());
+			head2.setText("Register Games in Games");
+			details.setText("                               Closest         Longest         1Put         Snake    ");
+		}
+		else if(itemPosition == 19)
+		{
+			
+			ListFragment fragment = new ResultFragment();
+			Bundle args = new Bundle();
+			args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
+			fragment.setArguments(args);
+			getFragmentManager().beginTransaction()
+                .replace(R.id.score_input_fragment, fragment)
+                .commit();
+			
+			TextView head = (TextView)findViewById(R.id.score_headline);
+			TextView head2 = (TextView)findViewById(R.id.score_headline2);
+			TextView details = (TextView)findViewById(R.id.score_details);
+			GolfTournament gt = ((RaymonTour)getApplicationContext()).getTournamentbyIndex(TOURNAMENT_ID);
+			GolfCourse gc = ((RaymonTour)getApplicationContext()).getCoursebyIndex(gt.getTournamentGolfCourceID());
+			head.setText(gt.getTournamentName() + " : " + gc.getCourceName());
+			head2.setText("Leaderboard");
+			details.setText("Press the verify button to register final result");
+		}
   
 		
 		
@@ -159,6 +206,13 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
         outState.putInt(STATE_SELECTED_NAVIGATION_ITEM,
                 getActionBar().getSelectedNavigationIndex());
         
+    }
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
     
 
