@@ -10,7 +10,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
@@ -46,7 +48,21 @@ public final class CoursePickerFragment extends DialogFragment {
 	      			   
 	      		   }
 	      			   
-	      		});
+	      		})
+	      		.setOnKeyListener(new OnKeyListener() {
+					
+					@Override
+					public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+						if(keyCode == KeyEvent.KEYCODE_BACK)
+						{
+							dialog.dismiss();
+							((TournamentEdit)getActivity()).onBackPressed();
+							
+						}
+						return false;
+					}
+
+	            });
 	      		
 	 
 	    return builder.create();

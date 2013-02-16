@@ -39,6 +39,7 @@ public class TourEdit extends Activity {
 		if(getIntent().getExtras() != null)
 		{
 			id = getIntent().getExtras().getInt("id");
+			getActionBar().setTitle("Edit Tour");
 			ContentResolver cp = getContentResolver();
 			Cursor cursorData = cp.query(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TOURS, Integer.toString(id)), null, null, null, null);
 

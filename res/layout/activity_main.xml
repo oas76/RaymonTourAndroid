@@ -13,28 +13,6 @@
     	android:background="@drawable/background_color"
     	android:clickable="false"
     	android:focusable="false"/>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/buttonBar"
-	    android:layout_alignParentBottom="true"
-	    android:layout_height="56dp"
-	    android:layout_width="fill_parent"
-	    android:orientation="horizontal"
-	    android:gravity="start"
-	    android:background="@drawable/menubar_color">
-	    <ImageButton android:id="@+id/addButon"
- 			android:contentDescription="@string/thumbs_image"
-        	android:src="@drawable/content_new"
-        	android:clickable="true"
- 			android:layout_width="wrap_content"
- 			android:layout_height="wrap_content"
- 			android:gravity="center"
- 			android:layout_marginRight="15dp"
- 			android:layout_marginTop="5dp"
- 			android:layout_marginBottom="5dp"
- 			style="?android:attr/borderlessButtonStyle" />
-	</LinearLayout>
-	
-
 
 </RelativeLayout>
 	

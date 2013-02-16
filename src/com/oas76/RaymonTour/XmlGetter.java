@@ -26,11 +26,13 @@ import android.widget.Toast;
 
 public class XmlGetter extends AsyncTask<String,Void,String>{
 	  String line = null;
+	  String output = null;
 	  Context context = null;
 	  
 	  public void setContext(Context con)
 	  {
 		  this.context = con;
+		  this.output = "Download failed";
 	  }
 	
 	
@@ -51,7 +53,7 @@ public class XmlGetter extends AsyncTask<String,Void,String>{
 
       @Override
       protected void onPostExecute(String result) { 
-    	  Toast.makeText(context,line,Toast.LENGTH_LONG).show();
+    	  Toast.makeText(context,output,Toast.LENGTH_LONG).show();
 
       }
 
@@ -73,6 +75,7 @@ public class XmlGetter extends AsyncTask<String,Void,String>{
   		            HttpResponse httpResponse = httpClient.execute(httpPost);
   		            HttpEntity httpEntity = httpResponse.getEntity();
   		            line = EntityUtils.toString(httpEntity);
+  		            output = "Download finished";
   		        } catch (UnsupportedEncodingException e) {
   		            line = "<results status=\"error\"><msg>Can't connect to server</msg></results>";
   		            Toast.makeText(context,line,Toast.LENGTH_LONG).show();

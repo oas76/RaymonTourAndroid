@@ -40,7 +40,7 @@ public class RaymonTour extends Application {
 		// Triger db rady with minor "update"
 		ContentResolver cr = getContentResolver();
 		ContentValues value = new ContentValues();
-		value.put(TourContentProvider.KEY_PLAYER_NIC, "test");
+		value.put(TourContentProvider.KEY_TOUR_ID, 1);
 		cr.insert(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TT, String.valueOf(0)),value);
 		cr.delete(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TT, String.valueOf(0)), null, null);
 	}

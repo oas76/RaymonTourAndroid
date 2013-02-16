@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class CourseEdit extends Activity {
@@ -56,12 +57,14 @@ public class CourseEdit extends Activity {
 			getter = new XmlGetter();
 			getter.setContext(this);
 		    getter.execute("");
+		    Toast.makeText(this,"Downloading course xml...",Toast.LENGTH_LONG).show();
 			intent = new Intent(this,TournamentEdit.class);
 			break;
 		case R.id.verify:
 			getter = new XmlGetter();
 			getter.setContext(this);
 		    getter.execute("");
+		    Toast.makeText(this,"Downloading course xml...",Toast.LENGTH_LONG).show();
 		    finish();
 			break;
 		}

@@ -11,10 +11,16 @@ import android.os.Bundle;
 
 public class TextFragment extends DialogFragment {
 	String displayText = "";
+	int state = 10;
 	
 	public void setDisplayText(String str)
 	{
 		displayText = str;
+	}
+	
+	public void setState(int state)
+	{
+		this.state = state;
 	}
 	
 	@Override
@@ -27,7 +33,11 @@ public class TextFragment extends DialogFragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
-					
+					if(state == TournamentEdit.STATE_INTRO)
+					{
+						((TournamentEdit)getActivity()).hookupAddPlayer();
+						((TournamentEdit)getActivity()).CURR_STATE = TournamentEdit.STATE_PLAYERS;
+					}
 				}
 			});
 	      	   

@@ -11,7 +11,9 @@ import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
@@ -76,10 +78,38 @@ public final class TourPickerFragment extends DialogFragment {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
 	    	                	((TournamentEdit)getActivity()).mSelectedTour.clear();
+	    	                	for(int i = 0; i < ((TournamentEdit)getActivity()).tboolList.length; i++)
+	    	                	{
+	    	                		((TournamentEdit)getActivity()).tboolList[i] = false;
+	    	                	}
+	    	                	((TournamentEdit)getActivity()).mSelectedPlayers.clear();
+	    	                	for(int i = 0; i < ((TournamentEdit)getActivity()).boolList.length; i++)
+	    	                	{
+	    	                		((TournamentEdit)getActivity()).boolList[i] = false;
+	    	                	}
+	    	                	PlayerFragment fragment = new PlayerFragment();
+	    	                    getFragmentManager().beginTransaction()
+	    	                            .replace(R.id.player_container, fragment)
+	    	                            .commit();
+	    	                    ((TournamentEdit)getActivity()).CURR_STATE = ((TournamentEdit)getActivity()).STATE_INTRO;
 	    	                	startActivity(new Intent(((TournamentEdit)getActivity()),TourEdit.class));
 	    	                	dialog.dismiss();
 	    	                    
 	    	                }
+	    	            })
+	    	            .setOnKeyListener(new OnKeyListener() {
+							
+							@Override
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+								if(keyCode == KeyEvent.KEYCODE_BACK)
+								{
+									dialog.dismiss();
+									((TournamentEdit)getActivity()).onBackPressed();
+									
+								}
+								return false;
+							}
+		
 	    	            });
 	          
 

@@ -55,7 +55,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
      */
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     
-    private static ImageButton addButton = null;
+    //private static ImageButton addButton = null;
     
     private static int SELECTED_VIEW = 1;
     public static final String MAIN_STATE = "MainState";
@@ -90,7 +90,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
                         menu_strings),
                 this);
         // Get Reference to the AddButton
-        addButton = (ImageButton)findViewById(R.id.addButon);
+        //addButton = (ImageButton)findViewById(R.id.addButon);
         hookupButton();
         
         if(((RaymonTour)getApplicationContext()).getPlayerlist().size() == 0)
@@ -132,6 +132,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main, menu);
+        getMenuInflater().inflate(R.menu.simple4_action_menu, menu);
         return true;
     }
     
@@ -142,6 +143,33 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 			Intent intent = new Intent(this,SettingsActivity.class);
 			startActivity(intent);
 			break;
+		case R.id.addnew:
+			intent = null;
+			XmlGetter getter = null;
+			switch(SELECTED_VIEW)
+			{
+				case SELECT_TOURNAMENT:
+					intent = new Intent(this,TournamentEdit.class);
+					break;
+				case SELECT_TOUR:
+					intent = new Intent(this, TourEdit.class);
+					break;
+				case SELECT_PLAYER:
+					//Send intent to edit player view
+					intent = new Intent(this,PlayerEdit.class);
+					break;
+				case SELECT_COURSE:
+					getter = new XmlGetter();
+					getter.setContext(this);
+					getter.execute("");
+					break;
+			
+			}
+			if(intent != null)
+	    		startActivityForResult(intent, 1);
+	    	else
+	    		Toast.makeText(this,"Downloading course xml...",Toast.LENGTH_LONG).show();
+			break;			
 		}
 		return super.onOptionsItemSelected(item);
 	
@@ -166,7 +194,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     
     private void hookupButton()
     {
-    	addButton.setOnClickListener(new OnClickListener() {
+    	/*
+    	   //addButton.setOnClickListener(new OnClickListener() {
     		public void onClick(View v){
     			Intent intent = null;
     			XmlGetter getter = null;
@@ -195,6 +224,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     	    		Toast.makeText(v.getContext(),"Downloading course xml...",Toast.LENGTH_LONG).show();
     		}
     	});
+    	*/
     }
     
     @Override

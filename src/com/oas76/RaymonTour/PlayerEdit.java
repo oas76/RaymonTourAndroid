@@ -42,6 +42,7 @@ public class PlayerEdit extends Activity  {
 		if(getIntent().getExtras() != null)
 		{
 			id = getIntent().getExtras().getInt("id");
+			getActionBar().setTitle("Edit Player");
 			ContentResolver cp = getContentResolver();
 			Cursor cursorData = cp.query(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS, Integer.toString(id)), null, null, null, null);
 

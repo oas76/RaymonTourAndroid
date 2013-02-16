@@ -10,8 +10,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 
@@ -74,19 +76,37 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	                @Override
 	    	                public void onClick(DialogInterface dialog, int id) {
 	    	                	((TournamentEdit)getActivity()).mSelectedPlayers.clear();
+	    	                	for(int i = 0; i < ((TournamentEdit)getActivity()).boolList.length; i++)
+	    	                	{
+	    	                		((TournamentEdit)getActivity()).boolList[i] = false;
+	    	                	}
+	    	                	PlayerFragment fragment = new PlayerFragment();
+	    	                    getFragmentManager().beginTransaction()
+	    	                            .replace(R.id.player_container, fragment)
+	    	                            .commit();
+	    	                    ((TournamentEdit)getActivity()).CURR_STATE = ((TournamentEdit)getActivity()).STATE_INTRO;
 	    	                	startActivity(new Intent(((TournamentEdit)getActivity()),PlayerEdit.class));
 	    	                	dialog.dismiss();
 	    	                    
 	    	                }
+	    	            })
+	    	            .setOnKeyListener(new OnKeyListener() {
+							
+							@Override
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+								if(keyCode == KeyEvent.KEYCODE_BACK)
+								{
+									dialog.dismiss();
+									((TournamentEdit)getActivity()).onBackPressed();
+									
+								}
+								return false;
+							}
+		
 	    	            });
 
 	    return builder.create();
-       
-
-
-        
-    }
-	
-
-
+	    
+	}
+ 
 }

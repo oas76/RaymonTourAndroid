@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
@@ -40,6 +42,20 @@ public final class NameEditFragment extends DialogFragment {
 	    	                	((TournamentEdit)getActivity()).bname = true;
 	    	                	dialog.dismiss();
 	    	                }
+	    	            })
+	    	   .setOnKeyListener(new OnKeyListener() {
+							
+							@Override
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+								if(keyCode == KeyEvent.KEYCODE_BACK)
+								{
+									dialog.dismiss();
+									((TournamentEdit)getActivity()).onBackPressed();
+									
+								}
+								return false;
+							}
+		
 	    	            });
 	    	           
 	          

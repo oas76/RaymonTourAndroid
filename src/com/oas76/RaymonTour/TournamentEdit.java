@@ -1,14 +1,13 @@
 package com.oas76.RaymonTour;
 
-import java.sql.SQLXML;
+
 import java.util.ArrayList;
-import java.util.Calendar;
+
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -20,16 +19,8 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.Toast;
-import android.support.v4.app.NavUtils;
+
 
 public class TournamentEdit extends Activity implements OnSharedPreferenceChangeListener   {
 	
@@ -57,7 +48,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	static final int STATE_DATE = 5;
 	static final int STATE_SETTINGS = 6;
 	
-	static int CURR_STATE = STATE_PLAYERS;
+	static int CURR_STATE = STATE_INTRO;
 	
 	static ArrayList<GolfPlayer> mSelectedPlayers = null;
 	boolean[] boolList = new boolean[30];
@@ -76,7 +67,8 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	    {
 	    	   CURR_STATE = STATE_INTRO;
 	    	   DialogFragment newFragment = new TextFragment();
-	   		   ((TextFragment)newFragment).setDisplayText("OK.. Now to the real stuff. Setting up the tournament. You have added player, tour and courses. The rest is a walk in the park" + 
+	    	   ((TextFragment)newFragment).setState(STATE_INTRO);
+	    	   ((TextFragment)newFragment).setDisplayText("OK.. Now to the real stuff. Setting up the tournament. You have added player, tour and courses. The rest is a walk in the park" + 
 	   				   									  "Just input and continue to press «>«. The system will allow you to press «V« when data is collected." +
 	   				   									  " Remember to check out the standard Android Settings menu before saving the tournament.... OK, that is it... you are now on your own" +
 	   				   									  " Happy golfing :)");
@@ -84,7 +76,13 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	   		   newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
 	    }
 	    else
-	    	CURR_STATE = STATE_INTRO;
+	    {
+	    	if(CURR_STATE == STATE_INTRO)
+	    	{
+	    		hookupAddPlayer();
+	    		CURR_STATE = STATE_PLAYERS;
+	    	}
+	    }
 		
 	    getActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -97,8 +95,13 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	@Override
 	public void onStart()
 	{
+		if(((RaymonTour)getApplicationContext()).getTournamnetlist().size() != 0)
+		{
+			hookupAddPlayer();
+			CURR_STATE = STATE_PLAYERS;
+		}
 		super.onStart();
-		CURR_STATE = STATE_INTRO;
+
 	}
 	
 	@Override
@@ -152,14 +155,14 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 				{
 					if(hookupVerify())
 					{
-						CURR_STATE  = STATE_PLAYERS;
+						CURR_STATE  = STATE_INTRO;
 						bOK = false;
 						bFinished = false;
 						startActivity(new Intent(this, MainActivity.class));
 					}
 					else
 					{
-						CURR_STATE = STATE_PLAYERS;
+						CURR_STATE = STATE_INTRO;
 						bOK = false;
 						bFinished = false;
 						invalidateOptionsMenu();
@@ -169,11 +172,11 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 		case R.id.verify:
 			if(hookupVerify())
 			{
-				CURR_STATE  = STATE_PLAYERS;
+				CURR_STATE  = STATE_INTRO;
 				startActivity(new Intent(this, MainActivity.class));
 			}
 			else
-				CURR_STATE = STATE_PLAYERS;
+				CURR_STATE = STATE_INTRO;
 			break;
 		case R.id.menu_settings:
 			Intent intent = new Intent(this,SettingsActivity.class);
@@ -205,11 +208,6 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 
 	}
 	
-	private void hookupTournamentSettings(){
-		Intent intent = new Intent(this,SettingsActivity.class);
-		startActivity(intent);
-	}
-	
 	private boolean hookupVerify(){
 		// Check input field,if not empty
 		if(!(name.equals("")) )
@@ -232,7 +230,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 
 	}
 	
-	private void hookupAddPlayer(){
+	public void hookupAddPlayer(){
 		DialogFragment newFragment = new PlayerPickerFragment();
 		newFragment.show(getFragmentManager(), "playerPicker");
 
@@ -369,7 +367,12 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 		
 		
 	}
-
+	
+	@Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+		CURR_STATE = STATE_INTRO;
+    }
+	
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
@@ -383,6 +386,22 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
         super.onConfigurationChanged(newConfig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
+    
+	@Override
+	public void onBackPressed() {
+		if(mSelectedPlayers != null)
+			mSelectedPlayers.clear();
+		for(int i = 0; i < boolList.length; i++)
+			boolList[i] = false;
+		for(int i = 0; i < tboolList.length; i++)
+			tboolList[i] = false;
+		gCourse = null;
+		name = null;
+		if(mSelectedTour != null)
+			mSelectedTour.clear();
+		this.finish();
+	    super.onBackPressed();
+	}
 
  
 
