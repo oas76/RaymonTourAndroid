@@ -14,15 +14,19 @@ import android.widget.EditText;
 public final class NameEditFragment extends DialogFragment {
 	View view = null;
 	EditText text = null;
-
-
+	String def_str = null;
 	
+	public void setDefaultName(String str)
+	{
+		this.def_str = str;
+	}
+		
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 		
 		view = getActivity().getLayoutInflater().inflate(R.layout.dialog_name, null);
 		text = (EditText) view.findViewById(R.id.tname);
-		text.setText("Dette er en test");
+		text.setText(def_str);
 
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

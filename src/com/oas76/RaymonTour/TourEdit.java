@@ -27,6 +27,7 @@ public class TourEdit extends Activity {
 	ImageButton verifyButton = null;
 	int id = -1;
 	boolean editTour = false;
+	boolean startmode = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +65,11 @@ public class TourEdit extends Activity {
         
 		if(((RaymonTour)getApplicationContext()).getTourlist().size() == 0)
         {
-				DialogFragment newFragment = new TextFragment();
-				((TextFragment)newFragment).setDisplayText("Allrigth...we now need to set up a tour for your players. Think PGA tour, LPGA tour etc." +
+				startmode = true;
+			    DialogFragment newFragment = new TextFragment();
+				((TextFragment)newFragment).setDisplayText("Allrigth...we now need to set up a tour for your player. Think PGA tour, LPGA tour etc." +
 				                                           "Create virtual tours that can last for days, weeks and even years. A tour should contain multipple golf tournaments" + 
-						                                   " and a tournament can be part of multipple tours. Confused ? You will get the hang of it. By the way, «v«, «+«and «>«is the same as before," + 
-				                                           " and naturally, you can later access your tours from the main menu dropdown.");
+						                                   " and a tournament can be part of multipple tours. Confused ? You will get the hang of it. Edit and press «> «to proceed");
 				
 			    newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
 
@@ -110,7 +111,10 @@ public class TourEdit extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.action_menu,menu);
+		if(startmode)
+			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		else
+			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -121,13 +125,12 @@ public class TourEdit extends Activity {
 		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.verify:
-			verifyData();
+			if(verifyData())
+				finish();
 			break;
 		case R.id.next:
-			intent = new Intent(this,CourseEdit.class);
-			break;
-		case R.id.add:
-			intent = new Intent(this,TourEdit.class);
+			if(verifyData())
+				intent = new Intent(this,CourseEdit.class);
 			break;
 		}
 		if(intent != null)

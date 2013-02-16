@@ -2,29 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_color"
     tools:context=".TournamentEdit" >
-    <LinearLayout android:id="@+id/tournamnet_topp_line"
-        android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:layout_alignParentTop="true"
-    	android:orientation="horizontal">
-   	 	<EditText android:id="@+id/tournament_name"
-    		android:layout_width="fill_parent"
-    		android:layout_height="wrap_content" 
-    		android:hint="Tournament Name"
-    		android:gravity="center_vertical"
-    		android:inputType="text"
-        	android:textSize="16sp"
-        	android:layout_marginTop="32dp"
-        	android:layout_marginBottom="5dp"
-        	android:layout_marginLeft="24dp"
-        	android:layout_marginRight="24dp"/>
-   	</LinearLayout>
   	<TableLayout android:id="@+id/player_container"
   	    android:layout_width="fill_parent"
   	    android:layout_height="fill_parent"
-  	    android:layout_below="@+id/course_and_date"
-  	    android:layout_above="@+id/bottom_bar">
+  	    android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="15dp">
   	</TableLayout>
 
 </RelativeLayout>

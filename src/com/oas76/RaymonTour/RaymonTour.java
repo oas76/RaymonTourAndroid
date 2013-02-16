@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 import android.app.Application;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 
 public class RaymonTour extends Application {
@@ -35,6 +37,12 @@ public class RaymonTour extends Application {
 	{
 		super.onCreate();
 		registerObserver();
+		// Triger db rady with minor "update"
+		ContentResolver cr = getContentResolver();
+		ContentValues value = new ContentValues();
+		value.put(TourContentProvider.KEY_PLAYER_NIC, "test");
+		cr.insert(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TT, String.valueOf(0)),value);
+		cr.delete(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_TT, String.valueOf(0)), null, null);
 	}
 	
 	@Override
@@ -139,6 +147,10 @@ public class RaymonTour extends Application {
 		cr.registerContentObserver(TourContentProvider.CONTENT_URI_TOURNAMENTS, true, observer);
 		cr.registerContentObserver(TourContentProvider.CONTENT_URI_COURSES,true, observer);
 		cr.registerContentObserver(TourContentProvider.CONTENT_URI_HOLES,true, observer);
+		cr.registerContentObserver(TourContentProvider.CONTENT_URI_TOURS,true, observer);
+		cr.registerContentObserver(TourContentProvider.CONTENT_URI_PLAYERS,true, observer);
+		cr.registerContentObserver(TourContentProvider.CONTENT_URI_TT,true, observer);
+
 		
 		
 	}
@@ -216,9 +228,9 @@ public class RaymonTour extends Application {
 					newTournament.setWinnerSneak(cursor.getInt(winner_sneak));
 					newTournament.setIsOffical(cursor.getInt(isOfficial));
 					getTournamnetlist().add(newTournament);
-				}
+				}// while
 			cursor.close();
-			}
+			}// if
 
 		cursor = cr.query(TourContentProvider.CONTENT_URI_COURSES,
 				  null,
@@ -246,7 +258,7 @@ public class RaymonTour extends Application {
 				newCourse.setCourceSlope(cursor.getInt(slope_index));
 				newCourse.setCourceValue(cursor.getDouble(value_index));
 				getCourselist().add(newCourse);
-			}
+			} // While
 			cursor.close();
 			cursor = cr.query(TourContentProvider.CONTENT_URI_HOLES, null, null, null, null);
 			if(cursor != null)
@@ -278,15 +290,63 @@ public class RaymonTour extends Application {
 						}
 					
 					}// while
-					cursor.close();
-
+			cursor.close();
 			} // if
 				
-		} // while
-				
+	  } // if
+	  cursor = cr.query(TourContentProvider.CONTENT_URI_TOURS,
+			  			null,
+			  			null,
+			  			null,
+			  			null);
+	  if(cursor != null)
+	  {
+			
+		    int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+			int name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_NAME);
+			int desc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_DESC);
+			int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_IMG);
+			getTourlist().clear();
+			
+			while(cursor.moveToNext())
+			{
+				Tour newTour = new Tour(cursor.getInt(index));
+				newTour.setTourName(cursor.getString(name_index));
+				newTour.setTourDesc(cursor.getString(desc_index));
+				newTour.setTourImgUrl(cursor.getString(img_index));
+				getTourlist().add(newTour);
+			}
+			
+	  cursor.close();
 	  }// if
-	} // method
+	  cursor = cr.query(TourContentProvider.CONTENT_URI_PLAYERS,
+			  			null,
+			  			null,
+			  			null,
+			  			null);
+	  if(cursor != null)
+	  {
+		    int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
+			int nic_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NIC);
+			int full_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
+			int hc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
+			int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
+			getPlayerlist().clear();
 		
+			while(cursor.moveToNext())
+			{
+				GolfPlayer newPlayer = new GolfPlayer(cursor.getInt(index));
+				newPlayer.setPlayerName(cursor.getString(full_index));
+				newPlayer.setPlayerNick(cursor.getString(nic_index));
+				newPlayer.setPlayerImg(cursor.getString(img_index));
+				newPlayer.setPlayerHC(cursor.getDouble(hc_index));
+				getPlayerlist().add(newPlayer);
+			}
+	  cursor.close();
+	  }// if
+				
+	}// method
+  }// Inner class		
 } // Class
 
 	

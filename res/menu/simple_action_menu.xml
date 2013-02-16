@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
    		<item
-        android:id="@+id/add"
+        android:id="@+id/verify"
         android:title="next"
-        android:icon="@drawable/content_new"
+        android:icon="@drawable/navigation_accept"
         android:showAsAction="always" />
 
         <item

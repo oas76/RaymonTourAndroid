@@ -79,13 +79,7 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	                    
 	    	                }
 	    	            });
-	          
-	    //.setAdapter(new ArrayAdapter<GolfPlayer>(getActivity(), android.R.layout.simple_list_item_1, SectionFragment.playerlist), new DialogInterface.OnClickListener() {
-	    //    public void onClick(DialogInterface dialog, int which) {
-	               // The 'which' argument contains the index position
-	               // of the selected item
-	           //}
-	 
+
 	    return builder.create();
        
 

@@ -27,6 +27,7 @@ public class PlayerEdit extends Activity  {
 	ImageButton verifyButton = null;
 	boolean editPlayer = false;
 	int id = -1;
+	boolean startMode = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class PlayerEdit extends Activity  {
 		editPlayer = false;
 				
 		setContentView(R.layout.activity_player_edit);
+		
 		
 		if(getIntent().getExtras() != null)
 		{
@@ -69,25 +71,28 @@ public class PlayerEdit extends Activity  {
 		
         if(((RaymonTour)getApplicationContext()).getPlayerlist().size() == 0)
         {
-			DialogFragment newFragment = new TextFragment();
+			startMode = true;
+        	DialogFragment newFragment = new TextFragment();
 			((TextFragment)newFragment).setDisplayText("Greetings and welcome to your first experience with the Raymon Tour android app. " +
-													   "Lets start with adding players!!  Input player details and press «v« to save, «+« to add a new players, and «>«to progress." +
-													   "NB! You can always edit and add new players later from the «Players« field in the main window dropdown. Enjoy");
+													   "Lets start with adding players!!  Input player details and press «>« to save and progress in the wizzard."+
+													   "NB! You can always access edit and add new players from the «Players« field in the main window dropdown later, but lets first do a qucik spinn through the program...");
 			
 		    newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
         	
         }
+        else
+        	startMode = false;
 
-		// Show the Up button in the action bar.
-		//getActionBar().setDisplayHomeAsUpEnabled(true);
-		//verifyButton = (ImageButton)findViewById(R.id.player_verify);
-		//hookupButton();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.action_menu,menu);
+
+		if(startMode)
+			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		else
+			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -98,13 +103,14 @@ public class PlayerEdit extends Activity  {
 		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.verify:
-			verifyData();
+			if(verifyData())
+			{
+				finish();
+			}
 			break;
 		case R.id.next:
-			intent = new Intent(this,TourEdit.class);
-			break;
-		case R.id.add:
-			intent = new Intent(this,PlayerEdit.class);
+			if(verifyData())
+				intent = new Intent(this,TourEdit.class);
 			break;
 		}
 		if(intent != null)

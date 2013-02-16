@@ -13,25 +13,35 @@ public class CourseEdit extends Activity {
 	
 	
 	boolean editTour = false;
+	boolean startmode = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_course_edit);
-		DialogFragment newFragment = new TextFragment();
-		((TextFragment)newFragment).setDisplayText("Honestly, do you know how boring it is to input all details for a 18 hole course?... Press the «+«button, and " +
-		                                           "we will download information from the INTERNET!!. Yes, it can cost some money, but you should not need to do this more" +
-				                                   "than a coupple of times a year. Here is an idea for you, You could make sure you do it while connected to WiFi. As usual, avaliable " +
-		                                           "from the main menu as well");
+		
+		if(((RaymonTour)getApplicationContext()).getCourselist().size() == 0)
+		{
+			startmode = true;
+			DialogFragment newFragment = new TextFragment();
+			((TextFragment)newFragment).setDisplayText("Honestly, do you know how boring it is to input all details for a 18 hole course?... Press the «>«button, and " +
+		                                           "we will download information from the INTERNET and progress!!. Yes, it can cost some money, but you should not need to do this more" +
+				                                   "than a coupple of times a year. Here is an idea for you, You could make sure you do it while connected to WiFi");
 				
-		newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
+			newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
+		}
+		else
+			startmode = false;
 
     }
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.simple_action_menu,menu);
+		if(startmode)
+			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		else
+			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -43,12 +53,16 @@ public class CourseEdit extends Activity {
 		XmlGetter getter = null;
 		switch (item.getItemId()) {
 		case R.id.next:
-			intent = new Intent(this,TournamentEdit.class);
-			break;
-		case R.id.add:
 			getter = new XmlGetter();
 			getter.setContext(this);
 		    getter.execute("");
+			intent = new Intent(this,TournamentEdit.class);
+			break;
+		case R.id.verify:
+			getter = new XmlGetter();
+			getter.setContext(this);
+		    getter.execute("");
+		    finish();
 			break;
 		}
 		if(intent != null)

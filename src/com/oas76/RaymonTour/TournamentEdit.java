@@ -2,6 +2,7 @@ package com.oas76.RaymonTour;
 
 import java.sql.SQLXML;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	boolean btour = false;
 	boolean bplayer = false;
 	boolean bname = false;
+	boolean bOK = false;
+	boolean bFinished = false;
 	
 	
 	int tYear = 0;
@@ -50,7 +53,6 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	static final int STATE_PLAYERS = 0;
 	static final int STATE_COURSE = 1;
 	static final int STATE_TOUR = 2;
-	static final int STATE_TEAMS = 3;
 	static final int STATE_NAME = 4;
 	static final int STATE_DATE = 5;
 	static final int STATE_SETTINGS = 6;
@@ -74,9 +76,10 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	    {
 	    	   CURR_STATE = STATE_INTRO;
 	    	   DialogFragment newFragment = new TextFragment();
-	   		   ((TextFragment)newFragment).setDisplayText("OK.. Now to the real stuff. Setting up the tournament. If you have added players, tours and courses, this should be a walk in the park" + 
-	   				   									  "Just input and press «>«. When finished, press «V«. Notice that when you save («V«), the tournament settings will be a snapshot of the current" +
-	   				   									  "settings...worried ? Just try it out " );
+	   		   ((TextFragment)newFragment).setDisplayText("OK.. Now to the real stuff. Setting up the tournament. You have added player, tour and courses. The rest is a walk in the park" + 
+	   				   									  "Just input and continue to press «>«. The system will allow you to press «V« when data is collected." +
+	   				   									  " Remember to check out the standard Android Settings menu before saving the tournament.... OK, that is it... you are now on your own" +
+	   				   									  " Happy golfing :)");
 	    	   
 	   		   newFragment.show(getFragmentManager(), "Welcome to RaymonTour");
 	    }
@@ -101,7 +104,14 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		if(bOK)
+			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
+		else if(bFinished)
+			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
+		else
+			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		
+		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return super.onCreateOptionsMenu(menu);
 		
 	}
@@ -135,26 +145,25 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 				{
 					hookupName();
 					CURR_STATE = STATE_NAME;
+					bOK = true;
+					invalidateOptionsMenu();
 				}
 				else if(CURR_STATE == STATE_NAME)
-				{
-					//hookupTeams();
-					CURR_STATE = STATE_TEAMS;
-				}
-				else if(CURR_STATE == STATE_TEAMS)
-				{
-					hookupTournamentSettings();
-					CURR_STATE = STATE_SETTINGS;
-				}
-				else if(CURR_STATE == STATE_SETTINGS)
 				{
 					if(hookupVerify())
 					{
 						CURR_STATE  = STATE_PLAYERS;
+						bOK = false;
+						bFinished = false;
 						startActivity(new Intent(this, MainActivity.class));
 					}
 					else
+					{
 						CURR_STATE = STATE_PLAYERS;
+						bOK = false;
+						bFinished = false;
+						invalidateOptionsMenu();
+					}
 				}
 				break;
 		case R.id.verify:
@@ -166,6 +175,10 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 			else
 				CURR_STATE = STATE_PLAYERS;
 			break;
+		case R.id.menu_settings:
+			Intent intent = new Intent(this,SettingsActivity.class);
+			startActivity(intent);
+			break;
 				
 		}
 		return super.onOptionsItemSelected(item);
@@ -175,8 +188,14 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	
 	private void hookupName()
 	{
+		
 		DialogFragment newFragment = new NameEditFragment();
+		if(gCourse != null)
+			((NameEditFragment)newFragment).setDefaultName(gCourse.getCourceName() + " - " + String.valueOf(tDate) + "/" + String.valueOf(tMonth) + "/" + String.valueOf(tYear));
+		else
+			((NameEditFragment)newFragment).setDefaultName("Raymon Tournament");
 	    newFragment.show(getFragmentManager(), "namepicker");
+	    
 
 	}
 	

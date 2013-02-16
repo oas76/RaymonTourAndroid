@@ -58,11 +58,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     private static ImageButton addButton = null;
     
     private static int SELECTED_VIEW = 1;
+    public static final String MAIN_STATE = "MainState";
     
-    private static final int SELECT_TOURNAMENT = 1;
-    private static final int SELECT_TOUR = 2;
-    private static final int SELECT_PLAYER = 3;
-    private static final int SELECT_COURSE = 4;
+    public static final int SELECT_TOURNAMENT = 1;
+    public static final int SELECT_TOUR = 2;
+    public static final int SELECT_PLAYER = 3;
+    public static final int SELECT_COURSE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         hookupButton();
         
         if(((RaymonTour)getApplicationContext()).getPlayerlist().size() == 0)
+        {
+        	actionBar.setSelectedNavigationItem(SELECT_PLAYER-1);
         	startActivity(new Intent(this, PlayerEdit.class));
+        }
 
 
         
@@ -103,7 +107,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore the previously serialized current dropdown position.
-        if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
+    	int restore_state;
+		if(getIntent() != null)
+		{
+    		restore_state = getIntent().getExtras().getInt(MAIN_STATE);
+    		getActionBar().setSelectedNavigationItem(restore_state-1);
+    		SELECTED_VIEW = restore_state;
+		}
+ 		else if(savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
             getActionBar().setSelectedNavigationItem(
                     savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
             SELECTED_VIEW = savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM) + 1;
@@ -123,6 +134,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
+    
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent intent = new Intent(this,SettingsActivity.class);
+			startActivity(intent);
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	
+	}
+		
     
     
     @Override

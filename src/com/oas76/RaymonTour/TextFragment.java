@@ -26,7 +26,7 @@ public class TextFragment extends DialogFragment {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
+					dialog.dismiss();
 					
 				}
 			});
