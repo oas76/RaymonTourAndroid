@@ -70,6 +70,7 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.simple_action_menu,menu);
+		getMenuInflater().inflate(R.menu.entry_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -111,6 +112,9 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
 	                .replace(R.id.score_input_fragment, fragment)
 	                .commit();
 		   
+			break;
+		case R.id.entry_menu:
+			((RaymonTour)getApplicationContext()).hookupAreYouSure("This Tournament entry and all data connected to this Tournament will be deleted forever. Is this OK ?",this,TOURNAMENT_ID);
 			break;
 			
 		}

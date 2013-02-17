@@ -43,6 +43,12 @@ public final class CoursePickerFragment extends DialogFragment {
 	      			{
                 		Toast.makeText(getActivity(),((TournamentEdit)getActivity()).gCourse.toString() + " selected",Toast.LENGTH_LONG).show();
                 		((TournamentEdit)getActivity()).bcourse = true;
+                		dialog.dismiss();
+                		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_COURSE)
+	                	{
+							((TournamentEdit)getActivity()).hookupTour();
+							TournamentEdit.CURR_STATE = TournamentEdit.STATE_TOUR;
+						}
 	      			}
                
 	      			   

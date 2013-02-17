@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 
 public final class PlayerPickerFragment extends DialogFragment {
@@ -66,10 +67,25 @@ public final class PlayerPickerFragment extends DialogFragment {
 	    	                            .commit();
 	    	                    
 	    	                    if(((TournamentEdit)getActivity()).mSelectedPlayers.size() > 0 )
+	    	                    {
 	    	                    	((TournamentEdit)getActivity()).bplayer = true;
-	    	                    	
-	    	                	
-	    	                	dialog.dismiss();
+	    	                    	dialog.dismiss();
+	    	                    	if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_PLAYERS)
+	    	                    	{
+	    	                    		((TournamentEdit)getActivity()).hookupCourse();
+	    	                    		TournamentEdit.CURR_STATE = TournamentEdit.STATE_COURSE;
+	    	                    	}
+
+	    	                    }
+	    	                    else
+	    	                    {
+	    	                    	Toast.makeText(getDialog().getContext(),"At least one player must be selected...",Toast.LENGTH_LONG).show();
+	    	                    	if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_PLAYERS)
+	    	                    	{
+	    	                    		((TournamentEdit)getActivity()).hookupAddPlayer();
+	    	                    		TournamentEdit.CURR_STATE = TournamentEdit.STATE_PLAYERS;
+	    	                    	}
+	    	                    }
 	    	                }
 	    	            })
 	    	            .setNegativeButton("Add New Player", new DialogInterface.OnClickListener() {

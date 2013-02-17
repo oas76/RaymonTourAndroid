@@ -12,7 +12,8 @@ import android.view.KeyEvent;
 import android.widget.DatePicker;
 
 
-public final class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+	boolean dateSet = false;
 
 	
 	@Override
@@ -32,20 +33,38 @@ public final class DatePickerFragment extends DialogFragment implements DatePick
 				if(keyCode == KeyEvent.KEYCODE_BACK)
 				{
 					dialog.dismiss();
-					((TournamentEdit)getActivity()).onBackPressed();
+					//((TournamentEdit)getActivity()).onBackPressed();
 					
 				}
 				return false;
 			}
-
         });
+        
+        
         return dialog;
     }
 	
 	@Override
 	public void onDateSet(DatePicker view, int year, int month, int day) {
 	        ((TournamentEdit)getActivity()).setDate(year,month,day);
+	        dateSet = true;
+      		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_DATE)
+        	{
+				((TournamentEdit)getActivity()).hookupName();
+				TournamentEdit.CURR_STATE = TournamentEdit.STATE_NAME;
+			}
+      		getDialog().dismiss();
 	        
 	}
+	
+	@Override
+	public void onDismiss(DialogInterface dialog)
+	{
+		super.onDismiss(dialog);
+		if(!dateSet)
+			((TournamentEdit)getActivity()).onBackPressed();
+	}
+	
+	
 
 }

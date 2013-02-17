@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 
@@ -40,7 +41,14 @@ public final class NameEditFragment extends DialogFragment {
 	 
 	    	                	((TournamentEdit)getActivity()).name = text.getText().toString();
 	    	                	((TournamentEdit)getActivity()).bname = true;
+	    	                	Toast.makeText(view.getContext(),((TournamentEdit)getActivity()).name,Toast.LENGTH_LONG).show();
 	    	                	dialog.dismiss();
+	    	              		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_NAME)
+	    	                	{
+	    	              			TournamentEdit.CURR_STATE = TournamentEdit.STATE_NAME;
+	    	              			((TournamentEdit)getActivity()).bFinished = true;
+	    	              			((TournamentEdit)getActivity()).invalidateOptionsMenu();
+	    						}
 	    	                }
 	    	            })
 	    	   .setOnKeyListener(new OnKeyListener() {

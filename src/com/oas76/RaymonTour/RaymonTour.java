@@ -4,14 +4,19 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import android.app.Application;
+import android.app.DialogFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.widget.Toast;
 
 public class RaymonTour extends Application {
+	
+	
 	
 	private ArrayList<GolfCourse> courselist;
 	private ArrayList<GolfPlayer> playerlist;
@@ -137,6 +142,67 @@ public class RaymonTour extends Application {
 				return gp;
 		}
 		return null;
+	}
+	
+	public void hookupAreYouSure(String txt, Context context, int index)
+	{
+		
+		Class mycontext = context.getClass();
+		String classname = mycontext.getSimpleName();
+		
+		DialogFragment newFragment = new AreYouSureFragment();
+		((AreYouSureFragment)newFragment).setDisplayText(txt);
+		((AreYouSureFragment)newFragment).setContext(context);
+		((AreYouSureFragment)newFragment).setDbIndex(index);
+
+		
+		
+		if(classname.equals("TourEdit"))
+			newFragment.show(((TourEdit)context).getFragmentManager(), "AreYouSure");
+		else if(classname.equals("PlayerEdit"))
+			newFragment.show(((PlayerEdit)context).getFragmentManager(), "AreYouSure");
+		else if(classname.equals("ScoreEdit"))
+			newFragment.show(((ScoreEdit)context).getFragmentManager(), "AreYouSure");
+	}
+	
+	
+	public void deletePlayer(int index)
+	{
+
+		ContentResolver cr = getContentResolver();
+		cr.delete(TourContentProvider.CONTENT_URI_PLAYERS,
+				  TourContentProvider.KEY_ID + "=?",
+				  new String[]{String.valueOf(index)});
+		cr.delete(TourContentProvider.CONTENT_URI_SCORES,
+				  TourContentProvider.KEY_PLAYER_ID + "=?",
+				  new String[]{String.valueOf(index)});
+	}
+	
+	public void deleteTour(int index)
+	{
+
+		ContentResolver cr = getContentResolver();
+		cr.delete(TourContentProvider.CONTENT_URI_TOURS,
+				  TourContentProvider.KEY_ID + "=?",
+				  new String[]{String.valueOf(index)});
+		cr.delete(TourContentProvider.CONTENT_URI_TT,
+				  TourContentProvider.KEY_TOUR_ID + "=?",
+				  new String[]{String.valueOf(index)});
+	}
+	
+	public void deleteTournament(int index)
+	{
+
+		ContentResolver cr = getContentResolver();
+		cr.delete(TourContentProvider.CONTENT_URI_TOURNAMENTS,
+				  TourContentProvider.KEY_ID + "=?",
+				  new String[]{String.valueOf(index)});
+		cr.delete(TourContentProvider.CONTENT_URI_TT,
+				  TourContentProvider.KEY_TOURNAMENT_ID + "=?",
+				  new String[]{String.valueOf(index)});
+		cr.delete(TourContentProvider.CONTENT_URI_SCORES,
+				  TourContentProvider.KEY_TOURNAMENT_ID + "=?",
+				  new String[]{String.valueOf(index)});
 	}
 	
 	

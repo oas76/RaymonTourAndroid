@@ -7,6 +7,7 @@
     <string name="title_section2">Tours</string>
     <string name="title_section1">Tournaments</string>
     <string name="menu_settings">Settings</string>
+    <string name="delete_entry">Delete</string>
     <string name="title_activity_tournament_edit">Add Tournament</string>
     <string name="input_tournament_name">Tournament Name</string>
     <string name="thumbs_image">Thumbnail Image</string>

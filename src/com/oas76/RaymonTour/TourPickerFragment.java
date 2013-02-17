@@ -67,11 +67,29 @@ public final class TourPickerFragment extends DialogFragment {
 	    	                			str = str + (((RaymonTour)getActivity().getApplication()).getTourlist()).get(i).toString();
 	    	                		
 	    	                	}
-	    	                	Toast.makeText(getActivity(),str,Toast.LENGTH_LONG).show();
-	    	                	if(((TournamentEdit)getActivity()).mSelectedTour.size() > 0)
-	    	                		((TournamentEdit)getActivity()).btour = true;
 	    	                	
-	    	                	dialog.dismiss();
+	    	                	if(((TournamentEdit)getActivity()).mSelectedTour.size() > 0)
+	    	                	{
+	    	                		((TournamentEdit)getActivity()).btour = true;
+	    	                		Toast.makeText(getActivity(),str,Toast.LENGTH_LONG).show();
+	    	                		dialog.dismiss();
+	    	                		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_TOUR)
+	    	                		{
+	    	                			((TournamentEdit)getActivity()).hookupDateButton();
+	    	                			TournamentEdit.CURR_STATE = TournamentEdit.STATE_DATE;
+	    	                		}
+	    	                	}
+	    	                	else
+	    	                	{
+	    	                		Toast.makeText(getDialog().getContext(),"At least one tour must be selected...",Toast.LENGTH_LONG).show();
+	    	                		dialog.dismiss();
+	    	                		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_TOUR)
+	    	                		{
+	    	                			((TournamentEdit)getActivity()).hookupTour();
+	    	                			TournamentEdit.CURR_STATE = TournamentEdit.STATE_TOUR;
+	    	                		}
+	    	                	}
+
 	    	                }
 	    	            })
 	    	            .setNegativeButton("Add New Tour", new DialogInterface.OnClickListener() {

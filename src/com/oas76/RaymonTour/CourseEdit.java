@@ -42,7 +42,8 @@ public class CourseEdit extends Activity {
 		if(startmode)
 			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
 		else
-			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
+			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
+		getMenuInflater().inflate(R.menu.entry_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 	

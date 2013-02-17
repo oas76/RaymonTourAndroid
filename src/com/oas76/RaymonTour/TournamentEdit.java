@@ -97,8 +97,11 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	{
 		if(((RaymonTour)getApplicationContext()).getTournamnetlist().size() != 0)
 		{
-			hookupAddPlayer();
-			CURR_STATE = STATE_PLAYERS;
+			if(CURR_STATE == STATE_INTRO)
+			{
+				hookupAddPlayer();
+				CURR_STATE = STATE_PLAYERS;
+			}
 		}
 		super.onStart();
 
@@ -151,7 +154,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 					bOK = true;
 					invalidateOptionsMenu();
 				}
-				else if(CURR_STATE == STATE_NAME)
+				else if(CURR_STATE == STATE_SETTINGS)
 				{
 					if(hookupVerify())
 					{
@@ -189,7 +192,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 	
 
 	
-	private void hookupName()
+	void hookupName()
 	{
 		
 		DialogFragment newFragment = new NameEditFragment();
@@ -202,18 +205,18 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 
 	}
 	
-	private void hookupDateButton(){
+	void hookupDateButton(){
 		DialogFragment newFragment = new DatePickerFragment();
 	    newFragment.show(getFragmentManager(), "datePicker");
 
 	}
 	
-	private boolean hookupVerify(){
+	boolean hookupVerify(){
 		// Check input field,if not empty
 		if(!(name.equals("")) )
 		{
 			bname = true;
-			Toast.makeText(this,this.name,Toast.LENGTH_LONG).show();
+			
 		}
 				
 		if(setData())
@@ -230,18 +233,18 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 
 	}
 	
-	public void hookupAddPlayer(){
+	void hookupAddPlayer(){
 		DialogFragment newFragment = new PlayerPickerFragment();
 		newFragment.show(getFragmentManager(), "playerPicker");
 
 	}
 	
-	private void hookupCourse(){
+	void hookupCourse(){
 		DialogFragment newFragment = new CoursePickerFragment();
 	    newFragment.show(getFragmentManager(), "coursePicker");
 	}
 	
-	private void hookupTour(){
+	void hookupTour(){
 		DialogFragment newFragment = new TourPickerFragment();
 	    newFragment.show(getFragmentManager(), "tourPicker");
 	}
@@ -399,6 +402,7 @@ public class TournamentEdit extends Activity implements OnSharedPreferenceChange
 		name = null;
 		if(mSelectedTour != null)
 			mSelectedTour.clear();
+		CURR_STATE = STATE_INTRO;
 		this.finish();
 	    super.onBackPressed();
 	}

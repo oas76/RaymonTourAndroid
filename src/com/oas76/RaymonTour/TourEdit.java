@@ -116,6 +116,8 @@ public class TourEdit extends Activity {
 			getMenuInflater().inflate(R.menu.simple2_action_menu,menu);
 		else
 			getMenuInflater().inflate(R.menu.simple3_action_menu,menu);
+		if(editTour)
+			getMenuInflater().inflate(R.menu.entry_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -132,6 +134,9 @@ public class TourEdit extends Activity {
 		case R.id.next:
 			if(verifyData())
 				intent = new Intent(this,CourseEdit.class);
+			break;
+		case R.id.entry_menu:
+			((RaymonTour)getApplicationContext()).hookupAreYouSure("This Tour entry and all data connected to this Tour will be deleted forever. Is this OK ?",this,id);
 			break;
 		}
 		if(intent != null)
