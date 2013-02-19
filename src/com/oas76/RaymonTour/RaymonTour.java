@@ -153,6 +153,16 @@ public class RaymonTour extends Application {
     }
 	
 
+    public Tour getTourbyIndex(int int1) {
+		for(Tour gt : this.getTourlist())
+		{
+			if(gt.getTourID() == int1)
+				return gt;
+		}
+		return null;
+	}
+    
+    
     public GolfTournament getTournamentbyIndex(int int1) {
 		for(GolfTournament gt : this.getTournamnetlist())
 		{

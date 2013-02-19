@@ -290,6 +290,7 @@ public class GolfTournament {
 		public void setIsOffical(int gIsOffical) {
 			this.gIsOffical = (gIsOffical == 1);
 		}
+
 		
 		public HashMap<Integer,Integer[]> tournamentWinningsList(Context context)
 		{

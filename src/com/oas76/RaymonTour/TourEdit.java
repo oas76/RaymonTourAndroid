@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -62,6 +63,16 @@ public class TourEdit extends Activity {
 			}
 	
 			editTour = true;
+			
+			// Set Results
+			ListFragment fragment = new TourResultFragment();
+			Bundle args = new Bundle();
+			args.putInt("ID", id);
+			fragment.setArguments(args);
+	        getFragmentManager().beginTransaction()
+	                .replace(R.id.tour_player_winnings_list, fragment)
+	                .commit();
+			
 		}
         
 		if(((RaymonTour)getApplicationContext()).getTourlist().size() == 0)
