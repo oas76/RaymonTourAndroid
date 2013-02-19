@@ -1,6 +1,7 @@
 package com.oas76.RaymonTour;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.oas76.RaymonTour.GolfPlayerAdapter.PlayerHolder;
@@ -20,13 +21,15 @@ public class ResultAdapter extends ArrayAdapter<GolfPlayer> {
     int layoutResourceId;    
     ArrayList<GolfPlayer> listdata = null;
     Bundle args = null;
+    HashMap<Integer,Integer[]> map = null;
 
-	public ResultAdapter(Context context, int resource, ArrayList<GolfPlayer> objects, Bundle args) {
+	public ResultAdapter(Context context, int resource, ArrayList<GolfPlayer> objects, Bundle args, HashMap<Integer, Integer[]> map) {
 		super(context, resource, objects);
 		this.context = context;
 		this.layoutResourceId = resource;
 		this.listdata = objects;
 		this.args = args;
+		this.map = map;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -57,7 +60,7 @@ public class ResultAdapter extends ArrayAdapter<GolfPlayer> {
         GolfPlayer player = listdata.get(position);
         holder.txtTitle.setText(player.getNick());
         holder.txtDetails.setText("");
-        holder.txtScore.setText(String.valueOf(player.getTemp_stroke()));
+        holder.txtScore.setText(" Score: " + String.valueOf(player.getTemp_stroke()) + "  Winnings: " + String.valueOf((map.get(player.getPlayerID()))[0]) + " Cost: " + String.valueOf((map.get(player.getPlayerID()))[1]));
         holder.imgIcon.setImageResource(R.drawable.ic_launcher);
         
         return row;

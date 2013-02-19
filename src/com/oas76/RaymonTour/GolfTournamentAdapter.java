@@ -28,7 +28,7 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 
 	    @Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        View row = convertView;
+	        View row = null;
 	        TournamentHolder holder = null;
 	        // Specific handeling if no data
 	        
@@ -43,10 +43,6 @@ public class GolfTournamentAdapter extends ArrayAdapter<GolfTournament> {
 	            holder.rowtype = DATA_ROW;
 	            
 	            row.setTag(holder);
-	        }
-	        else
-	        {
-	            holder = (TournamentHolder)row.getTag();
 	        }
 	        
 	        GolfTournament tournament = data.get(position);

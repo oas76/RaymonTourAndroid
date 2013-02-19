@@ -111,33 +111,6 @@ public final class SectionFragment extends ListFragment implements LoaderManager
     	Object[] obj = null;
     	listView = new ListView(getActivity());
     	
-    	/* Create initial placeholder objects
-    	GolfPlayer gp = new GolfPlayer(0, "Press «+« to add players to your app");
-    	GolfCourse gc = new GolfCourse(0, "Press «+« to add courses to your app");
-    	GolfTournament gt = new GolfTournament(0,"Press «+« to add a new tournament to your app");
-    	Tour gTour = new Tour(0);
-    	gTour.setTourName("Press «+« to add a new tour to your app");
-    	
-    	if(((RaymonTour)myActivity.getApplication()).getPlayerlist().size() == 0 )
-    	{
-    		((RaymonTour)myActivity.getApplication()).getPlayerlist().add(gp);
-    	}
-    	if(((RaymonTour)myActivity.getApplication()).getCourselist().size() == 0)
-    	{
-    		((RaymonTour)myActivity.getApplication()).getCourselist().add(gc);
-    	}
-    	if(((RaymonTour)myActivity.getApplication()).getTournamnetlist().size() == 0)
-    	{
-    		((RaymonTour)myActivity.getApplication()).getTournamnetlist().add(gt);
-    	}
-    	if(((RaymonTour)myActivity.getApplication()).getTourlist().size() == 0)
-    	{
-    		((RaymonTour)myActivity.getApplication()).getTourlist().add(gTour);
-    	}
-    	*/
-    	
-
-    	
     	at = new GolfTournamentAdapter(listView.getContext(),
     									R.layout.listview_tournament_row, 
     									((RaymonTour)myActivity.getApplication()).getTournamnetlist());
@@ -174,24 +147,24 @@ public final class SectionFragment extends ListFragment implements LoaderManager
    	
     	if(EDIT_ACTIVITY.equals("Tournament"))
     	{
-  			//at = new GolfTournamentAdapter(listView.getContext(),R.layout.listview_tournament_row, tournamentlist);
-  			listView.setAdapter(at);
+  			if(at != null)
+    			listView.setAdapter(at);
     	}
     	else if(EDIT_ACTIVITY.equals("Course"))
     	{   		
-    		//ac = new GolfCourseAdapter(listView.getContext(), R.layout.listview_course_row, courselist);
-        	listView.setAdapter(ac); 
+    		if(ac != null)
+    			listView.setAdapter(ac); 
     	}
     	else if(EDIT_ACTIVITY.equals("Player"))
     	{
-    		//ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
-        	listView.setAdapter(ap); 
+    		if(ap != null)
+    			listView.setAdapter(ap); 
 
     	}   	
     	else if(EDIT_ACTIVITY.equals("Tour"))
     	{
-    		//atour = new GolfTourAdapter(listView.getContext(), R.layout.listview_course_row, tourlist);
-        	listView.setAdapter(atour); 
+    		if(atour != null)
+    			listView.setAdapter(atour); 
  
     	}
     	
@@ -291,6 +264,12 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 							((RaymonTour)myActivity.getApplication()).getPlayerlist().add(newPlayer);
 						}
 					}
+					cursor.close();
+					if(ap != null && ap.getCount() == 0)
+					{
+						((RaymonTour)myActivity.getApplication()).getPlayerlist().clear();
+						ap.notifyDataSetChanged();
+					}
 					break;
 				case COURSE_LOADER_ID:
 					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
@@ -360,7 +339,11 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 							i++;
 						}
 					}
-					
+					if(ac != null && ac.getCount() == 0)
+					{
+						((RaymonTour)myActivity.getApplication()).getCourselist().clear();
+						ac.notifyDataSetChanged();
+					}
 					break;
 
 
@@ -427,6 +410,12 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 							((RaymonTour)myActivity.getApplication()).getTournamnetlist().add(newTournament);
 						}
 					}
+					cursor.close();
+					if(at != null && at.getCount() == 0)
+					{
+						((RaymonTour)myActivity.getApplication()).getTournamnetlist().clear();
+						at.notifyDataSetChanged();
+					}
 					break;
 				case TOUR_LOADER_ID:
 					index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
@@ -449,12 +438,18 @@ public final class SectionFragment extends ListFragment implements LoaderManager
 						if(atour != null)
 						{
 							atour.add(newTour);
-							atour.notifyDataSetChanged();
+							//atour.notifyDataSetChanged();
 						}
 						else
 						{
 							((RaymonTour)myActivity.getApplication()).getTourlist().add(newTour);
 						}
+					}
+					cursor.close();
+					if(atour != null && atour.getCount() == 0)
+					{
+						((RaymonTour)myActivity.getApplication()).getTourlist().clear();
+						atour.notifyDataSetChanged();
 					}
 					break;
 				case SCORE_LOADER_ID:

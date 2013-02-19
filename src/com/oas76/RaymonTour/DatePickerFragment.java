@@ -46,7 +46,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 	
 	@Override
 	public void onDateSet(DatePicker view, int year, int month, int day) {
-	        ((TournamentEdit)getActivity()).setDate(year,month,day);
+	        ((TournamentEdit)getActivity()).setDate(year,month+1,day);
 	        dateSet = true;
       		if(TournamentEdit.CURR_STATE == TournamentEdit.STATE_DATE)
         	{

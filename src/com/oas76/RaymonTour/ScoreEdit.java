@@ -88,16 +88,21 @@ public class ScoreEdit extends Activity implements OnNavigationListener {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.verify:
+			if(SELECTED_VIEW + 1 == this.menu_entries)
+			{
+				((RaymonTour)getApplicationContext()).hookupDoYouWannaStore("Do you want to make these scores official? NB! it is not possible to reverse",this,TOURNAMENT_ID);
+			}
+		
 			getActionBar().setSelectedNavigationItem(SELECTED_VIEW);
-			ListFragment fragment = new ScoreInputFragment();
-	        Bundle args = new Bundle();
-	        args.putInt(ScoreInputFragment.ARG_SECTION_NUMBER, SELECTED_VIEW + 1);
-	        args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
-	        fragment.setArguments(args);
-	        getFragmentManager().beginTransaction()
+			Fragment fragment = new ScoreInputFragment();
+			Bundle args = new Bundle();
+			args.putInt(ScoreInputFragment.ARG_SECTION_NUMBER, SELECTED_VIEW + 1);
+			args.putInt(ScoreInputFragment.TOURNAMENT_ID, this.TOURNAMENT_ID);
+			fragment.setArguments(args);
+			getFragmentManager().beginTransaction()
 	                .replace(R.id.score_input_fragment, fragment)
 	                .commit();
-		   
+			
 			break;
 		case R.id.next:
 			if(SELECTED_VIEW + 1 == this.menu_entries)

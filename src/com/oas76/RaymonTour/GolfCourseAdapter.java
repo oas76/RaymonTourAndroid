@@ -28,7 +28,7 @@ public class GolfCourseAdapter extends ArrayAdapter<GolfCourse> {
 
 		@Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        View row = convertView;
+	        View row = null;
 	        CourseHolder holder = null;
 	        
 	        if(row == null)
@@ -43,11 +43,7 @@ public class GolfCourseAdapter extends ArrayAdapter<GolfCourse> {
 	            
 	            row.setTag(holder);
 	        }
-	        else
-	        {
-	            holder = (CourseHolder)row.getTag();
-	        }
-	        
+
 	        GolfCourse course = data.get(position);
 	        holder.txtTitle.setText(course.getCourceName() + " ( " + course.getCourceTee() + " )");
 	        holder.txtDetails.setText("Par: " + Integer.toString(course.getCourcePar()) + " Length: " + String.valueOf(course.getCourceLength()) + " C.R/Slope: " + String.valueOf(course.getCourceValue()) + "/" + course.getCourceSlope());

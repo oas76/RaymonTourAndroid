@@ -29,7 +29,7 @@ public class GolfTourAdapter extends ArrayAdapter<Tour> {
 
 	    @Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        View row = convertView;
+	        View row = null;
 	        TourHolder holder = null;
 	        
 	        if(row == null)
@@ -43,10 +43,6 @@ public class GolfTourAdapter extends ArrayAdapter<Tour> {
 	            holder.txtDesc = (TextView)row.findViewById(R.id.courceDetails);
 	            
 	            row.setTag(holder);
-	        }
-	        else
-	        {
-	            holder = (TourHolder)row.getTag();
 	        }
 	        
 	        Tour tour = listdata.get(position);

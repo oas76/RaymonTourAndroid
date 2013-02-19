@@ -291,6 +291,143 @@ public class GolfTournament {
 			this.gIsOffical = (gIsOffical == 1);
 		}
 		
+		public HashMap<Integer,Integer[]> tournamentWinningsList(Context context)
+		{
+			final int WINNINGS = 0;
+			final int COST = 1;
+			
+			int tId = this.getTournamentID();
+			HashMap<Integer, Integer[]> map = new HashMap<Integer, Integer[]>();
+			
+			// winner is first entry in result list
+		    ArrayList<GolfPlayer> resultlist = tournamentResultList(context);
+			ArrayList<GolfPlayer> winners = new ArrayList<GolfPlayer>();
+			
+			int i = 0;
+			winners.add(resultlist.get(i));
+			while(resultlist.size() > i+1)
+			{
+				if(resultlist.get(i).getTemp_stroke() == resultlist.get(++i).getTemp_stroke())
+					winners.add(resultlist.get(i));
+				else
+					break;
+			}
+			
+			int nrOfWinners = winners.size();
+			int nrOfPlayers = resultlist.size();
+			int stakesWin = 0;
+			int stakesClose = 0;
+			int stakesLong = 0;
+			int stakes1Put = 0;
+			int stakesSneak = 0;
+			int tournamentPurse = 0;
+			int winnerLongest = -1;
+			int winnerClosest = -1;
+			int winnerPut = -1;
+			int winnerSneak = -1;
+			boolean bIsReg = false;
+			
+			ContentResolver cr = context.getApplicationContext().getContentResolver();
+			Cursor cur = cr.query(TourContentProvider.CONTENT_URI_TOURNAMENTS,
+								  null,
+								  TourContentProvider.KEY_ID + "=?",
+								  new String[]{String.valueOf(this.getTournamentID())},
+								  null);
+			if(cur != null && cur.getCount() == 1)
+			{
+				cur.moveToNext();
+				bIsReg = (cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_OFFICIAL)) == 0 ? false : true);
+				stakesWin = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES));
+				stakesLong = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_LONGEST));
+				stakesClose = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_CLOSEST));
+				stakesSneak = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_SNAKE));
+				stakes1Put = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_STAKES_1PUT));
+				tournamentPurse = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_TOURNAMENT_SPONSOR_PURSE));
+				
+				winnerLongest = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_LONGEST));
+				winnerClosest = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_CLOSEST));
+				winnerPut = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_PUT));
+				winnerSneak = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_WINNER_SNEAK));
+			}
+			cur.close();
+			
+			// Fill all in list in mapview.
+			for(GolfPlayer gp : resultlist)
+			{				
+				Integer res[] = new Integer[2];
+				res[WINNINGS] = 0;	
+				res[COST] = 0;
+				map.put(gp.getPlayerID(), res);
+			}
+			
+			
+			int main_price = (stakesWin*nrOfPlayers + tournamentPurse)/nrOfWinners;
+			
+			for(GolfPlayer gp : winners)
+			{
+				Integer res[] = new Integer[2];
+				res[WINNINGS] = main_price;	
+				res[COST] = 0;
+				map.put(gp.getPlayerID(), res);
+			}
+			
+			int sneak_price = stakesSneak;
+			int sneak_cost = stakesSneak*nrOfPlayers;
+			int smartid = -1;
+			
+			for(GolfPlayer gp : resultlist)
+			{
+				Integer res[] = new Integer[2];
+				int pid = gp.getPlayerID();
+				int team_id = ((RaymonTour)context.getApplicationContext()).getTeamIndexByTournament(pid,this.getTournamentID());
+				int nrOfTeamPlayers = ((RaymonTour)context.getApplicationContext()).getNrOfTeamPlayersByTournament(pid,this.getTournamentID());
+				
+				res[WINNINGS] = (map.get(pid))[WINNINGS];
+				res[COST] = (map.get(pid))[COST];
+				
+				if(team_id > 0)
+				{
+					smartid = team_id;
+				}
+				else
+				{
+					smartid = pid;
+				}
+				
+				res = map.get(pid);
+				res[COST] = (winnerLongest > -1 ? stakesLong : 0 ) + (winnerClosest > -1 ? stakesClose : 0 ) + (winnerPut > -1 ? stakes1Put : 0 ) + stakesWin;
+			
+				if(smartid == winnerLongest)
+				{
+					res[WINNINGS] = map.get(pid)[WINNINGS] + (stakesLong*nrOfPlayers)/nrOfTeamPlayers;
+					map.put(pid, res);
+				}
+				if(smartid == winnerClosest)
+				{
+					res[WINNINGS] = map.get(pid)[WINNINGS] + (stakesClose*nrOfPlayers)/nrOfTeamPlayers;
+					map.put(pid, res);
+				}
+				if(smartid == winnerPut)
+				{
+					res[WINNINGS] = map.get(pid)[WINNINGS] + (stakes1Put*nrOfPlayers)/nrOfTeamPlayers;
+					map.put(pid, res);
+				}
+				if(smartid != winnerSneak && winnerSneak != -1)
+				{
+					res[WINNINGS] = map.get(pid)[WINNINGS] + sneak_price;
+					map.put(pid, res);
+				}
+				if(smartid == winnerSneak)
+				{
+					res[COST] = map.get(pid)[COST] + stakesSneak*(nrOfPlayers-nrOfTeamPlayers)/nrOfTeamPlayers;
+					map.put(pid, res);
+					
+				}
+					
+			}
+			return map;
+		}
+		
 		public ArrayList<GolfPlayer> tournamentResultList(Context context)
 		{
 			int tId = this.getTournamentID();

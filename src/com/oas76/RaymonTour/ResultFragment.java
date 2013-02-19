@@ -1,6 +1,7 @@
 package com.oas76.RaymonTour;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -35,11 +36,13 @@ public class ResultFragment extends ListFragment {
     	Bundle args = new Bundle();
     	args.putInt(ScoreInputFragment.TOURNAMENT_ID, tId);
     	
+    	HashMap<Integer,Integer[]> map = ((RaymonTour)myActivity.getApplicationContext()).getTournamentbyIndex(tId).tournamentWinningsList(myActivity);
     	al = ((RaymonTour)myActivity.getApplicationContext()).getTournamentbyIndex(tId).tournamentResultList(myActivity);
     	ap = new ResultAdapter(listView.getContext(),
     								R.layout.listview_result_row, 
     								al,
-    								args);
+    								args,
+    								map);
 
     		//ap = new GolfPlayerAdapter(listView.getContext(), R.layout.listview_course_row, playerlist);
         listView.setAdapter(ap); 

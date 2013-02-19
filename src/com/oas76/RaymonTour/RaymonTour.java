@@ -2,6 +2,10 @@ package com.oas76.RaymonTour;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import android.app.Application;
 import android.app.DialogFragment;
@@ -88,6 +92,40 @@ public class RaymonTour extends Application {
 		this.tournamnetlist = tournamnetlist;
 	}
 	
+	public int getTeamIndexByTournament(int playerid, int tournamentid)
+	{
+		ContentResolver cr = getContentResolver();
+		int team_id = 0;
+        Cursor cur = cr.query(TourContentProvider.CONTENT_URI_SCORES,
+        				null,
+        				TourContentProvider.KEY_HOLE_NR + "=? AND " + TourContentProvider.KEY_TOURNAMENT_ID + "=? AND " + TourContentProvider.KEY_PLAYER_ID + "=?",
+        				new String[]{"1", String.valueOf(tournamentid), String.valueOf(playerid)},
+        				null);
+        if(cur != null && cur.getCount() == 1)
+        {
+        	cur.moveToNext();
+        	team_id = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_TEAM_ID));
+        	
+        	cur.close();
+        }
+        return team_id;
+	}
+	
+	public int getNrOfTeamPlayersByTournament(int playerid, int tournamentid)
+	{
+		int team_id = getTeamIndexByTournament(playerid, tournamentid);
+		int count = 0;
+		if(team_id == 0)
+			count = 1;
+		else
+		{
+			GolfTeam players = getPlayersByTeamIndex(team_id, tournamentid);
+			count = players.getPlayers().size();
+		}
+		return count;
+		
+	}
+	
     public GolfTeam getPlayersByTeamIndex(int index, int tournament_id)
     {
     	ArrayList<GolfPlayer> res = new ArrayList<GolfPlayer>();
@@ -107,8 +145,10 @@ public class RaymonTour extends Application {
         		int player_id = cur.getInt(player_index);
         		res.add(getPlayerbyIndex(player_id));
         	}
+        cur.close();
             	
         }
+        
         return new GolfTeam(res);
     }
 	
@@ -144,6 +184,28 @@ public class RaymonTour extends Application {
 		return null;
 	}
 	
+	public void hookupDoYouWannaStore(String txt, Context context, int index)
+	{
+		Class mycontext = context.getClass();
+		String classname = mycontext.getSimpleName();
+		
+		DialogFragment newFragment = new AreYouSureFragment();
+		((AreYouSureFragment)newFragment).setDisplayText(txt);
+		((AreYouSureFragment)newFragment).setContext(context);
+		((AreYouSureFragment)newFragment).setDbIndex(index);
+		((AreYouSureFragment)newFragment).setOfficialData(true);
+
+		
+		
+		if(classname.equals("TourEdit"))
+			newFragment.show(((TourEdit)context).getFragmentManager(), "AreYouSure");
+		else if(classname.equals("PlayerEdit"))
+			newFragment.show(((PlayerEdit)context).getFragmentManager(), "AreYouSure");
+		else if(classname.equals("ScoreEdit"))
+			newFragment.show(((ScoreEdit)context).getFragmentManager(), "AreYouSure");
+	}
+
+	
 	public void hookupAreYouSure(String txt, Context context, int index)
 	{
 		
@@ -176,6 +238,7 @@ public class RaymonTour extends Application {
 		cr.delete(TourContentProvider.CONTENT_URI_SCORES,
 				  TourContentProvider.KEY_PLAYER_ID + "=?",
 				  new String[]{String.valueOf(index)});
+		observer.onChange(false);
 	}
 	
 	public void deleteTour(int index)
@@ -188,6 +251,7 @@ public class RaymonTour extends Application {
 		cr.delete(TourContentProvider.CONTENT_URI_TT,
 				  TourContentProvider.KEY_TOUR_ID + "=?",
 				  new String[]{String.valueOf(index)});
+		observer.onChange(false);
 	}
 	
 	public void deleteTournament(int index)
@@ -203,6 +267,7 @@ public class RaymonTour extends Application {
 		cr.delete(TourContentProvider.CONTENT_URI_SCORES,
 				  TourContentProvider.KEY_TOURNAMENT_ID + "=?",
 				  new String[]{String.valueOf(index)});
+		observer.onChange(false);
 	}
 	
 	
@@ -250,9 +315,11 @@ public class RaymonTour extends Application {
 						          null,
 						          null,
 						          null);
+			
+			getTournamnetlist().clear();
 			if(cursor != null)
 			{
-				getTournamnetlist().clear();
+				
 				while(cursor.moveToNext())
 				{
 					int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
@@ -303,9 +370,11 @@ public class RaymonTour extends Application {
 		          null,
 		          null,
 		          null);
+		
+		getCourselist().clear();
 		if(cursor != null)
 		{
-			getCourselist().clear();
+			
 			while(cursor.moveToNext())
 			{
 				int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
@@ -365,6 +434,8 @@ public class RaymonTour extends Application {
 			  			null,
 			  			null,
 			  			null);
+	  
+	  getTourlist().clear();
 	  if(cursor != null)
 	  {
 			
@@ -372,7 +443,7 @@ public class RaymonTour extends Application {
 			int name_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_NAME);
 			int desc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_DESC);
 			int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_TOUR_IMG);
-			getTourlist().clear();
+			
 			
 			while(cursor.moveToNext())
 			{
@@ -390,6 +461,8 @@ public class RaymonTour extends Application {
 			  			null,
 			  			null,
 			  			null);
+	  
+	  getPlayerlist().clear();
 	  if(cursor != null)
 	  {
 		    int index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_ID);
@@ -397,7 +470,7 @@ public class RaymonTour extends Application {
 			int full_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_NAME);
 			int hc_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_HC);
 			int img_index = cursor.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_IMGURL);
-			getPlayerlist().clear();
+			
 		
 			while(cursor.moveToNext())
 			{
@@ -413,6 +486,49 @@ public class RaymonTour extends Application {
 				
 	}// method
   }// Inner class		
+
+
+	public void updatePlayerWinnings(int id) {
+		
+		GolfTournament tournament = getTournamentbyIndex(id);
+		if(!tournament.getIsOffical())
+		{
+			HashMap<Integer, Integer[]> map = tournament.tournamentWinningsList(this);
+			Set<Entry<Integer, Integer[]>> set = map.entrySet();
+			for(Entry<Integer, Integer[]> entry : set)
+			{
+				int pId = entry.getKey();
+				int winnings = entry.getValue()[0];
+				int cost = entry.getValue()[1];
+			
+				ContentResolver cr = getApplicationContext().getContentResolver();
+				Cursor cur = cr.query(TourContentProvider.CONTENT_URI_PLAYERS,
+								  	  null, 
+								  	  TourContentProvider.KEY_ID + "=?",
+								  	  new String[]{String.valueOf(pId)},
+									  null);
+				if(cur != null && cur.getCount() == 1)
+				{
+					cur.moveToNext();
+					int player_winnings = cur.getInt(cur.getColumnIndexOrThrow(TourContentProvider.KEY_PLAYER_WINNINGS));
+					winnings += player_winnings;
+					cur.close();
+				}
+				ContentValues values = new ContentValues();
+				values.put(TourContentProvider.KEY_PLAYER_WINNINGS, winnings);
+				
+				cr.update(Uri.withAppendedPath(TourContentProvider.CONTENT_URI_PLAYERS,String.valueOf(pId)),
+						                       values, 
+											   null,
+											   null);
+			}
+		}
+			
+			
+		
+	}
+	
+
 } // Class
 
 	

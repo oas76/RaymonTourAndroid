@@ -28,7 +28,7 @@ public class GolfPlayerAdapter extends ArrayAdapter<GolfPlayer> {
 
 	    @Override
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        View row = convertView;
+	        View row = null;
 	        PlayerHolder holder = null;
 	        
 	        if(row == null)
@@ -43,11 +43,7 @@ public class GolfPlayerAdapter extends ArrayAdapter<GolfPlayer> {
 	            
 	            row.setTag(holder);
 	        }
-	        else
-	        {
-	            holder = (PlayerHolder)row.getTag();
-	        }
-	        
+	
 	        GolfPlayer player = listdata.get(position);
 	        holder.txtTitle.setText(player.getNick());
 	        holder.txtDetails.setText("HC: " + String.valueOf(player.getPlayerHC()));

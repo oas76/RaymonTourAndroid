@@ -56,10 +56,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
                         android.R.id.text1,
                         menu_strings),
                 this);
-        // Get Reference to the AddButton
-        //addButton = (ImageButton)findViewById(R.id.addButon);
-        hookupButton();
-        
+
         if(((RaymonTour)getApplicationContext()).getPlayerlist().size() == 0)
         {
         	actionBar.setSelectedNavigationItem(SELECT_PLAYER-1);
@@ -133,7 +130,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 			
 			}
 			if(intent != null)
-	    		startActivityForResult(intent, 1);
+	    		startActivity(intent);
 	    	else
 	    		Toast.makeText(this,"Downloading course xml...",Toast.LENGTH_LONG).show();
 			break;			
@@ -148,7 +145,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     public boolean onNavigationItemSelected(int position, long id) {
         // When the given dropdown item is selected, show its contents in the
         // container view.
-        ListFragment fragment = new SectionFragment();
+    	this.reDrawSectionFragment(position + 1);
+        /*ListFragment fragment = new SectionFragment();
         Bundle args = new Bundle();
         args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
         fragment.setArguments(args);
@@ -156,54 +154,57 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
                 .replace(R.id.container, fragment)
                 .commit();
         SELECTED_VIEW = position + 1;
+        */
         return true;
     }
     
-    private void hookupButton()
+    @Override
+    public void onStart()
     {
-    	/*
-    	   //addButton.setOnClickListener(new OnClickListener() {
-    		public void onClick(View v){
-    			Intent intent = null;
-    			XmlGetter getter = null;
-    			switch(SELECTED_VIEW)
-    			{
-    				case SELECT_TOURNAMENT:
-    					intent = new Intent(v.getContext(),TournamentEdit.class);
-    					break;
-    				case SELECT_TOUR:
-    					intent = new Intent(v.getContext(), TourEdit.class);
-    					break;
-    				case SELECT_PLAYER:
-    					//Send intent to edit player view
-    					intent = new Intent(v.getContext(),PlayerEdit.class);
-    					break;
-    				case SELECT_COURSE:
-    					getter = new XmlGetter();
-    					getter.setContext(v.getContext());
-    					getter.execute("");
-    					break;
-    			
-    			}
-    			if(intent != null)
-    	    		startActivityForResult(intent, 1);
-    	    	else
-    	    		Toast.makeText(v.getContext(),"Downloading course xml...",Toast.LENGTH_LONG).show();
-    		}
-    	});
-    	*/
+    	super.onStart();
+    	int return_mode = SELECTED_VIEW;
+    	Intent intent = getIntent();
+    	
+    	if(intent != null)
+    	{
+    		Bundle args = intent.getExtras();
+    		if(args != null)
+    			return_mode = args.getInt("ReturnMode");
+    	}
+    	reDrawSectionFragment(return_mode);
+    	
     }
+    
+    
+    public void reDrawSectionFragment(int position)
+    {
+        ListFragment fragment = new SectionFragment();
+        Bundle args = new Bundle();
+        args.putInt(SectionFragment.ARG_SECTION_NUMBER, position);
+        fragment.setArguments(args);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+        SELECTED_VIEW = position;
+    }
+    
+    //private void hookupButton()
+    //{
+    //
+    //}
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	// Ignore results. Just redraw fragments
-    	ListFragment fragment = new SectionFragment();
+    	reDrawSectionFragment(SELECTED_VIEW);
+    	/*ListFragment fragment = new SectionFragment();
         Bundle args = new Bundle();
         args.putInt(SectionFragment.ARG_SECTION_NUMBER, SELECTED_VIEW);
         fragment.setArguments(args);
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+         */
     }//onAcrivityResult
     
 
