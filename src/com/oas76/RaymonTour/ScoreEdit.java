@@ -20,7 +20,8 @@ import android.support.v4.app.NavUtils;
 
 public class ScoreEdit extends Activity implements OnNavigationListener {
 	
-	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+	// Test Git Hub Integration
+    private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	private static int SELECTED_VIEW = 0;
 	private static int TOURNAMENT_ID = -1;
 	private int menu_entries = 0;
